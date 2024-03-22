@@ -1,0 +1,42 @@
+const mongoose = require('mongoose');
+
+const Schema = mongoose.Schema;
+
+const PlanSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    slug: {
+      type: String,
+      required: true,
+    },
+    stripe_plan: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+    },
+    services: {
+      type: [String],
+    },
+    description: {
+      type: String,
+    },
+    plan: {
+      property: Number,
+      document: Number,
+      teamMember: Number,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const PlanModel = mongoose.model('plans', PlanSchema);
+
+module.exports = PlanModel;
