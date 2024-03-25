@@ -64,7 +64,7 @@ function UploadContainer() {
         fileLists: data,
         name
       });
-      console.log(res);
+      // console.log(res);
       navigate(`/result/${res.data.id}`);
     } catch (error) {
       console.log(error);
