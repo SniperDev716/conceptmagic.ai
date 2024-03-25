@@ -6,10 +6,10 @@ const { _generateImage, _getImages } = require('../utils/imagineAPI');
 exports.upload = async (req, res) => {
   try {
     const file = req.file;
-    // const oldFile = req.body.oldFile;
-    // if (oldFile) {
-    //   delFile(`public${oldFile}`);
-    // }
+    const oldFile = req.body.oldFile;
+    if (oldFile) {
+      delFile(`public${oldFile}`);
+    }
 
     return res.json({
       success: true,
@@ -40,14 +40,16 @@ exports.deleteFile = async (req, res) => {
 exports.getImageDescriptions = async (req, res) => {
   try {
     let fileLists = req.body.fileLists;
+    let name = req.body.name || "Untitled";
     let inputImages = [];
     for (const file of fileLists) {
       let desc = await getDescription(`http://46.175.146.14:5000/${file}`);
+
       inputImages.push({
         path: file,
         desc,
       });
-    }
+    };
     if (inputImages.length == 0) {
       return res.status(400).json({
         success: false,
@@ -55,11 +57,36 @@ exports.getImageDescriptions = async (req, res) => {
       });
     }
 
+    let prompt = inputImages[0].desc/* await getPromptByKeywords(inputImages[0].desc) */;
+
+    let data = await _generateImage(prompt);
+
     let concept = new ConceptModel({
       inputImages,
       userId: req.user._id,
+      name,
+      resultImages: [{ imageId: data.id, prompt, status: data.status }]
     });
+
     await concept.save();
+
+    _getImages(data.id).then(async (_res) => {
+      await ConceptModel.updateOne(
+        {
+          _id: concept._id,
+          'resultImages.imageId': data.id
+        },
+        {
+          $set: {
+            'resultImages.$.urls': _res.upscaled_urls,
+            'resultImages.$.status': _res.status,
+          }
+        }, { new: true });
+      req.app.get('io').to(req.user.socketId).emit('IMAGE_GENERATED', {
+        success: true,
+      });
+    });
+
     return res.json({
       success: true,
       id: concept._id
@@ -101,16 +128,18 @@ exports.generateImage = async (req, res) => {
     const keywords = req.body.keywords;
     const id = req.params.id;
     const imageId = req.body.imageId;
+    const isAdvanced = req.body.isAdvanced;
 
     const concept = await ConceptModel.findById(id);
     let prevPrompt;
-    if (imageId) {
+    if (imageId && !isAdvanced) {
       let img = concept.resultImages.filter(img => img.imageId == imageId);
       prevPrompt = img[0].prompt;
     }
-    let prompt = await getPromptByKeywords(keywords, prevPrompt);
-
-    console.log(prompt);
+    let prompt = keywords;
+    if (!isAdvanced) {
+      prompt = await getPromptByKeywords(keywords, prevPrompt);
+    }
 
     let data = await _generateImage(prompt);
 
@@ -145,6 +174,24 @@ exports.generateImage = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message,
+    })
+  }
+}
+
+exports.getProjects = async (req, res) => {
+  try {
+    const projects = await ConceptModel.find({
+      userId: req.user._id
+    });
+    return res.json({
+      success: false,
+      projects
+    });
+  } catch (error) {
+    console.log("[ERROR]:getProject", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message
     })
   }
 }

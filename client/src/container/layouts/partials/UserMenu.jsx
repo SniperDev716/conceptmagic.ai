@@ -2,21 +2,21 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Dropdown } from 'antd';
-import { LockOutlined, UserOutlined, AreaChartOutlined, SafetyOutlined, IdcardOutlined, UnorderedListOutlined, CommentOutlined } from '@ant-design/icons';
+import { LockOutlined, UserOutlined, AreaChartOutlined, SafetyOutlined, IdcardOutlined, UnorderedListOutlined, CommentOutlined, FileImageOutlined } from '@ant-design/icons';
 
 import { logout } from '../../../redux/auth/authSlice';
 
 const items = [
   {
-    label: 'Main APP',
-    key: '/home',
-    icon: <CommentOutlined />,
+    label: 'My projects',
+    key: '/projects',
+    icon: <FileImageOutlined />,
   },
-  {
-    label: 'Plans',
-    key: '/plans',
-    icon: <UnorderedListOutlined />,
-  },
+  // {
+  //   label: 'Plans',
+  //   key: '/plans',
+  //   icon: <UnorderedListOutlined />,
+  // },
   {
     label: 'Profile',
     key: '/user/profile',

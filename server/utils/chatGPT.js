@@ -18,7 +18,7 @@ exports.getDescription = async (image_url) => {
                 url: image_url
               }
             },
-            { type: "text", text: "Describe this image like a blip captioning model" },
+            { type: "text", text: "describe this image like a blip captioning model so that another text-to-image model can take your response and recreate this exact image." },
           ]
         }
       ]
@@ -38,8 +38,8 @@ exports.getPromptByKeywords = async (desc, prev) => {
     ${desc}
     `;
     if (prev) {
-      prompt = `Please add '${desc}' to the following sentence and make it cohesive: \n
-      ${prev}
+      prompt = `Edit this prompt with the following instruction “${desc}”. Keep as much of the original prompt intact, only change what’s needed to integrate the new instructions: \n
+      ${prompt}
       `;
     }
     const props = {

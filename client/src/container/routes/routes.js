@@ -2,6 +2,16 @@ import { lazy } from 'react';
 
 const routes = [
   {
+    path: 'welcome',
+    component: lazy(() => import('../pages/Home/Welcome')),
+    exact: true,
+  },
+  {
+    path: 'projects',
+    component: lazy(() => import('../pages/Home/Project')),
+    exact: true,
+  },
+  {
     path: 'upload',
     component: lazy(() => import('../pages/Home/Upload')),
     exact: true,

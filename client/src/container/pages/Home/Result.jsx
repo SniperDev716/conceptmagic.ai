@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Col, Divider, Image, Layout, Row, Spin, Tag, Typography, Upload } from "antd";
+import { Button, Col, Divider, Image, Input, Layout, Row, Spin, Tag, Typography, Upload } from "antd";
 import { CloseCircleTwoTone, FileImageOutlined } from "@ant-design/icons";
 import { WithContext as ReactTags } from 'react-tag-input';
 
@@ -13,9 +13,8 @@ import { useSocket } from "../../../context/socket";
 
 import loadingGif from "../../../assets/images/loading.gif";
 
-const { Content, Sider } = Layout;
+const { TextArea } = Input;
 const { Title, Text } = Typography;
-const { Dragger } = Upload;
 
 const KeyCodes = {
   comma: 188,
@@ -32,16 +31,23 @@ function Result() {
 
   const { id } = useParams();
 
+  const [isAdvanced, setIsAdvanced] = useState([]);
   const [concept, setConcept] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(-1);
   const [keywords, setKeywords] = useState([]);
   const [prevIndex, setPrevIndex] = useState({});
   const [tags, setTags] = useState([]);
+  const [advancedValue, setAdvancedValue] = useState([]);
+  const [basicValue, setBasicValue] = useState([]);
 
   useEffect(() => {
     const getImage = () => {
       getConceptById(id).then(res => {
         setConcept(res.data.concept);
+        if (res.data.concept) {
+          setAdvancedValue(res.data.concept.resultImages.map(data => data.prompt));
+          setIsAdvanced(res.data.concept.resultImages.map(() => false));
+        }
       }).catch(err => {
         console.log(err);
       });
@@ -123,20 +129,20 @@ function Result() {
     setKeywords([...tmp]);
   }
 
-  const handleGenerate = async (imageId) => {
-    setLoading(true);
+  const handleGenerate = async (imageId, index) => {
+    setLoading(index);
     try {
       // let res = await getImageDescription({
       //   path
       // });
       // console.log(res);
-      let res = await generateImage(id, { keywords: tags.map(tag => tag.text).join(", "), imageId });
+      let res = await generateImage(id, { keywords: isAdvanced[index] ? advancedValue[index] : basicValue[index], imageId, isAdvanced: isAdvanced[index] });
       // console.log(res);
       setConcept(res.data.concept);
     } catch (error) {
       console.log(error);
     }
-    setLoading(false);
+    setLoading(-1);
   }
 
 
@@ -144,7 +150,7 @@ function Result() {
     <div className="text-center max-w-5xl w-screen mx-auto p-4">
       <Row gutter={[32, 32]} className="mt-6">
         <Col span={24}>
-          <Title level={2}>Your First Results... Delete or Add Keywords & Descriptions to generate more concepts.</Title>
+          <Title level={4}>Please wait 30 seconds while our AI Generates your starting image.</Title>
         </Col>
         {/* <Col span={24}>
           <div className="border-1 border-solid border-gray-300 bg-gray-100 py-2 px-4 text-left">
@@ -164,7 +170,7 @@ function Result() {
               <div className="loader"></div>
               <p className="mb-0">Generating...</p>
             </div></Col>)}
-            <Col span={24}>
+            {/* <Col span={24}>
               <p className="break-words text-lg text-left p-2 bg-gray-50 border-l-4 border-0 border-l-gray-600 border-solid">
                 {data.prompt.split(" ").map((word, index1) => <span className="group/item mr-1 hover:bg-green-200 cursor-pointer relative" key={`desc_${index}_${index1}`} onClick={() => handleAdd(word, index, index1)}>{word}
                   <span className="absolute top-[-15px] right-[-15px] z-[-10] group-hover/item:z-auto" onClick={() => {
@@ -172,9 +178,9 @@ function Result() {
                   }}><CloseCircleTwoTone twoToneColor="red" /></span>
                 </span>)}
               </p>
-            </Col>
+            </Col> */}
             <Col span={24}>
-              <div className="border-1 border-solid border-gray-200 rounded p-2">
+              {/* <div className="border-1 border-solid border-gray-200 rounded p-2">
                 <ReactTags
                   tags={tags}
                   suggestions={data.prompt.split(" ").filter(txt => txt.length > 5).map(txt => ({ id: txt, text: txt }))}
@@ -186,11 +192,32 @@ function Result() {
                   inputFieldPosition="inline"
                   autocomplete
                 />
+              </div> */}
+              <TextArea placeholder={isAdvanced[index] ? "" : "Describe what you want to add, change, or remove from your initial renderings"} autoSize={{ maxRows: 5 }} value={isAdvanced[index] ? advancedValue[index] : basicValue[index]} onChange={(e) => {
+                if (isAdvanced[index]) {
+                  let tmp = [...advancedValue];
+                  tmp[index] = e.target.value;
+                  setAdvancedValue(tmp);
+                } else {
+                  let tmp = [...basicValue];
+                  tmp[index] = e.target.value;
+                  setBasicValue(tmp);
+                }
+              }} />
+
+              <div className="mt-1 text-right">
+                <Button type="text" onClick={() => {
+                  
+                  setIsAdvanced((prev) => {
+                    prev[index] = !prev[index];
+                    return [...prev];
+                  });
+                }}>{isAdvanced[index] ? "Basic Mode" : "Advanced"}</Button>
               </div>
             </Col>
             <Col span={24}>
               <div className="text-center mb-4">
-                <Button type="primary" size="large" onClick={() => handleGenerate(data.imageId)} loading={loading}>Generate</Button>
+                <Button type="primary" size="large" onClick={() => handleGenerate(data.imageId, index)} loading={loading == index}>Generate</Button>
               </div>
             </Col>
             <Divider />

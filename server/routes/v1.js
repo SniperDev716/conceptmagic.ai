@@ -10,5 +10,6 @@ router.post("/deleteFile", v1Controller.deleteFile);
 router.post("/getImageDescription", v1Controller.getImageDescriptions);
 router.get("/getConceptById/:id", v1Controller.getConceptById);
 router.post("/generateImage/:id", v1Controller.generateImage);
+router.get("/getProjects", v1Controller.getProjects);
 
 module.exports = router;

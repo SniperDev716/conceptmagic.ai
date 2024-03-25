@@ -8,13 +8,14 @@ const conceptSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'users'
         },
+        name: {
+            type: String,
+            default: 'Untitled'
+        },
         inputImages: [{
             path: String,
             desc: String,
         }],
-        keywords: {
-            type: [String]
-        },
         resultImages: [
             {
                 urls: {
