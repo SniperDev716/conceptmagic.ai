@@ -43,15 +43,15 @@ exports.register = async (req, res) => {
         const access_token = jwt.sign(newUser, config.SecretKey, {
             expiresIn: config.TOKEN_EXPIRES_IN,
         });
-        sendEmail({
-            from: process.env.FROM_ADDRESS,
-            to: user.email,
-            subject: "Welcome to RealtyGenius.AI",
-            html: 'welcome',
-            data: {
-                name: user.name
-            }
-        });
+        // sendEmail({
+        //     from: process.env.FROM_ADDRESS,
+        //     to: user.email,
+        //     subject: "Welcome to RealtyGenius.AI",
+        //     html: 'welcome',
+        //     data: {
+        //         name: user.name
+        //     }
+        // });
         return res.status(200).json({
             success: true,
             user: newUser,
