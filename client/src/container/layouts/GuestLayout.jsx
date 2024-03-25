@@ -40,7 +40,7 @@ function GuestLayout({ children }) {
           <div className="flex items-center justify-between max-w-5xl mx-auto">
             <div className="demo-logo">
               <Link to="/" className="hidden sm:inline">
-                <img src={LogoSrc} alt="logo" className="w-[200px] p-3" />
+                <img src={LogoSrc} alt="logo" className="w-[64px] p-3" />
               </Link>
               <Link to="/" className="inline sm:hidden">
                 <img src={smLogoSrc} alt="logo" className="w-[64px] p-3" />
