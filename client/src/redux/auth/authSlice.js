@@ -47,9 +47,10 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.isAuthenticated = !!action.payload.token;
       state.errors = {};
-      if(action.payload.navigate) {
-        action.payload.navigate('/welcome');
-      }
+      // if(action.payload.navigate) {
+      //   console.log('hello');
+      //   action.payload.navigate('/welcome');
+      // }
     },
     loginFailure(state, action) {
       state.loader = false;

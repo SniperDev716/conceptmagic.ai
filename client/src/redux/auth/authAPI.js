@@ -44,11 +44,11 @@ function* loginAPI(action) {
 
 function* registerAPI(action) {
   try {
-    const { search, navigate, ...rest } = action.payload;
+    const { search, ...rest } = action.payload;
     const response = yield call(() => postRequest('auth/register' + search, rest));
     yield setStorage('token', response.data.token);
     // navigate('/welcome');
-    yield put(loginSuccess({ ...response.data, navigate }));
+    yield put(loginSuccess({ ...response.data }));
   } catch (e) {
     yield put(loginFailure(e.response.data));
   }
