@@ -170,7 +170,7 @@ function Result() {
               <div className="loader"></div>
               <p className="mb-0">Generating...</p>
             </div></Col>)}
-            {data.status !== 'failed' && new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
+            {data.status == 'failed' && new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
               {/* <div className="loader"></div> */}
               <p className="mb-0">Failed</p>
             </div></Col>)}
