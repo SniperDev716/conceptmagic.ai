@@ -43,6 +43,7 @@ exports.getImageDescriptions = async (req, res) => {
     let name = req.body.name || "Untitled";
     let inputImages = [];
     for (const file of fileLists) {
+      // let desc = await getDescription(`http://46.175.146.14${file}`);
       let desc = await getDescription(`http://54.173.222.178${file}`);
 
       inputImages.push({
@@ -137,10 +138,12 @@ exports.generateImage = async (req, res) => {
       prevPrompt = img[0].prompt;
     }
     let prompt = keywords;
-    if (!isAdvanced) {
+    if (!isAdvanced && keywords) {
       prompt = await getPromptByKeywords(keywords, prevPrompt);
     }
-    
+
+    prompt = prompt || prevPrompt;
+
     let data = await _generateImage(prompt);
 
     concept.resultImages = [...concept.resultImages, { imageId: data.id, prompt, status: data.status }];
