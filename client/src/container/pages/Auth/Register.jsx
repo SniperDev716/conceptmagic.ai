@@ -17,8 +17,8 @@ function Register() {
   const dispatch = useDispatch();
   const onFinish = (values) => {
     // console.log('Received values of form: ', values);
-    dispatch(register({...values, search: location.search}));
-    navigate('/welcome');
+    dispatch(register({ ...values, search: location.search, navigate }));
+    // navigate('/welcome');
   };
   return (
     <GuestLayout>

@@ -20,6 +20,9 @@ function Project() {
   useEffect(() => {
     getProjects().then(res => {
       setProjects(res.data.projects);
+      // if (res.data.projects.length == 0) {
+      //   navigate('/welcome');
+      // }
     }).catch((err) => {
       console.log(err);
     });

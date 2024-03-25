@@ -1,19 +1,19 @@
-import {all, call, put, takeLatest} from 'redux-saga/effects'
-import {message } from 'antd';
+import { all, call, put, takeLatest } from 'redux-saga/effects'
+import { message } from 'antd';
 
-import { 
-  login, 
-  register, 
-  loginSuccess, 
-  loginFailure, 
+import {
+  login,
+  register,
+  loginSuccess,
+  loginFailure,
   logout,
-  logoutSuccess, 
-  getUser, 
-  getUserSuccess, 
-  getUserFailure, 
-  updateProfile, 
-  updateProfileSuccess, 
-  updateProfileFailure, 
+  logoutSuccess,
+  getUser,
+  getUserSuccess,
+  getUserFailure,
+  updateProfile,
+  updateProfileSuccess,
+  updateProfileFailure,
   updatePassword,
   updatePasswordSuccess,
   updatePasswordFailure,
@@ -22,7 +22,7 @@ import {
   getPlan,
   getPlanSuccess,
   getPlanFailure,
- } from './authSlice';
+} from './authSlice';
 import { getRequest, postRequest } from '../../services/axiosClient';
 import { setStorage } from '../../helpers';
 
@@ -44,10 +44,11 @@ function* loginAPI(action) {
 
 function* registerAPI(action) {
   try {
-    const {search, ...rest} = action.payload;
+    const { search, navigate, ...rest } = action.payload;
     const response = yield call(() => postRequest('auth/register' + search, rest));
     yield setStorage('token', response.data.token);
     yield put(loginSuccess(response.data));
+    navigate('/welcome');
   } catch (e) {
     yield put(loginFailure(e.response.data));
   }
