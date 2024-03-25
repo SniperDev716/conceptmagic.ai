@@ -121,7 +121,7 @@ function UploadContainer() {
             type="text"
             className="text-center"
             size="large"
-            placeholder="Name Your Prjoect..."
+            placeholder="Name Your Project..."
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
