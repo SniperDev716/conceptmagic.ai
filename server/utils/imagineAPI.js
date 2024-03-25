@@ -37,7 +37,7 @@ exports._getImages = async (imageId) => {
     let responseData = response.data;
     // console.log(responseData)
     let data = responseData.data;
-    while (data.status != "completed") {
+    while (data.status != "completed" && data.status != "failed") {
       console.log(data.status, Date.now());
       response = await axiosClient.get(`${imageId}`);
       responseData = response.data;

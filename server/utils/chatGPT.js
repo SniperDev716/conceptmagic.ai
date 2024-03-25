@@ -39,7 +39,7 @@ exports.getPromptByKeywords = async (desc, prev) => {
     `;
     if (prev) {
       prompt = `Edit this prompt with the following instruction “${desc}”. Keep as much of the original prompt intact, only change what’s needed to integrate the new instructions: \n
-      ${prompt}
+      ${prev}
       `;
     }
     const props = {

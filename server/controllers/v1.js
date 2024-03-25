@@ -140,7 +140,7 @@ exports.generateImage = async (req, res) => {
     if (!isAdvanced) {
       prompt = await getPromptByKeywords(keywords, prevPrompt);
     }
-
+    console.log(isAdvanced, imageId, '----------------');
     let data = await _generateImage(prompt);
 
     concept.resultImages = [...concept.resultImages, { imageId: data.id, prompt, status: data.status }];
