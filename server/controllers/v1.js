@@ -43,7 +43,7 @@ exports.getImageDescriptions = async (req, res) => {
     let name = req.body.name || "Untitled";
     let inputImages = [];
     for (const file of fileLists) {
-      let desc = await getDescription(`http://46.175.146.14:5000/${file}`);
+      let desc = await getDescription(`http://54.173.222.178${file}`);
 
       inputImages.push({
         path: file,
