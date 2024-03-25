@@ -63,7 +63,7 @@ function Result() {
 
     return () => {
       if (socket) {
-        socket.off('IMAGE_GENERATED');
+        // socket.off('IMAGE_GENERATED');
       }
     }
   }, []);
@@ -166,9 +166,13 @@ function Result() {
                 <Image src={`${url}`} width={'100%'} />
               </Col>)}
             </Image.PreviewGroup>}
-            {data.status !== 'completed' && new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
+            {(data.status !== 'completed' && data.status !== 'failed') && new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
               <div className="loader"></div>
               <p className="mb-0">Generating...</p>
+            </div></Col>)}
+            {data.status !== 'failed' && new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
+              {/* <div className="loader"></div> */}
+              <p className="mb-0">Failed</p>
             </div></Col>)}
             {/* <Col span={24}>
               <p className="break-words text-lg text-left p-2 bg-gray-50 border-l-4 border-0 border-l-gray-600 border-solid">
