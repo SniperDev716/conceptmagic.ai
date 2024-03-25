@@ -47,8 +47,8 @@ function* registerAPI(action) {
     const { search, navigate, ...rest } = action.payload;
     const response = yield call(() => postRequest('auth/register' + search, rest));
     yield setStorage('token', response.data.token);
-    yield put(loginSuccess(response.data));
-    navigate('/welcome');
+    // navigate('/welcome');
+    yield put(loginSuccess({ ...response.data, navigate }));
   } catch (e) {
     yield put(loginFailure(e.response.data));
   }
