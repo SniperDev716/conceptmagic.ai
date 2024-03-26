@@ -6,7 +6,7 @@ import { getPlan } from "../../../redux/auth/authSlice";
 import constants from "../../../config/constants";
 import { FileImageOutlined } from "@ant-design/icons";
 import { getStorage } from "../../../helpers";
-import { deleteFile, getImageDescription } from "../../../services/v1API";
+import { deleteFile, getImageDescription, getImagesfromPin } from "../../../services/v1API";
 
 const { Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -23,10 +23,24 @@ function UploadContainer() {
   const [fileLists, setFileLists] = useState([]);
   const [name, setName] = useState("");
   const [path, setPath] = useState("");
-
-  // useEffect(() => {
-  //   // dispatch(getPlan());
-  // }, []);
+  const [pinImages, setPinImages] = useState([]);
+  const [setting, setSetting] = useState({});
+  useEffect(() => {
+    // dispatch(getPlan());
+    getImagesfromPin({
+      "query": "Package Design"
+    }).then(res => {
+      console.log(res.data);
+      setPinImages(res.data.images);
+      setSetting({
+        bookmarks: res.data.bookmarks,
+        token: res.data.token,
+        cookie: res.data.cookie,
+      })
+    }).catch(err => {
+      console.log(err);
+    })
+  }, []);
 
   // useEffect(() => {
   //   // console.log(id, plan);
@@ -77,6 +91,16 @@ function UploadContainer() {
       <Row gutter={[32, 32]} className="mt-6">
         <Col span={24}>
           <Title level={2}>Upload your Inspiration Image</Title>
+        </Col>
+        <Col span={24}>
+          <div className="">
+            {/* <Row gutter={[32, 32]}>
+              {pinImages.map((image, index) => <Col span={6}>
+                <Image src={image} alt="pin" />
+              </Col>)}
+            </Row> */}
+            {pinImages.map((image, index) => <img key={index} src={image} alt={'pin'} className="w-1/4"/>)}
+          </div>
         </Col>
         <Col span={24}>
           <div>

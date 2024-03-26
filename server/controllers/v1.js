@@ -2,6 +2,7 @@ const delFile = require('../utils/delFile');
 const { getDescription, getPromptByKeywords } = require("../utils/chatGPT");
 const ConceptModel = require('../models/concepts');
 const { _generateImage, _getImages } = require('../utils/imagineAPI');
+const { pinterestSearch } = require('../scripts/pinSearch');
 
 exports.upload = async (req, res) => {
   try {
@@ -43,8 +44,8 @@ exports.getImageDescriptions = async (req, res) => {
     let name = req.body.name || "Untitled";
     let inputImages = [];
     for (const file of fileLists) {
-      // let desc = await getDescription(`http://46.175.146.14${file}`);
-      let desc = await getDescription(`http://54.173.222.178${file}`);
+      let desc = await getDescription(`http://46.175.146.14${file}`);
+      // let desc = await getDescription(`http://54.173.222.178${file}`);
 
       inputImages.push({
         path: file,
@@ -195,6 +196,24 @@ exports.getProjects = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message
+    })
+  }
+}
+
+exports.getImagesfromPin = async (req, res) => {
+  const { query, token, bookmarks, cookie } = req.body;
+
+  try {
+    let data = await pinterestSearch(query, cookie, token, bookmarks);
+    return res.json({
+      success: true,
+      ...data,
+    })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
     })
   }
 }

@@ -150,7 +150,7 @@ function Result() {
     <div className="text-center max-w-5xl w-screen mx-auto p-4">
       <Row gutter={[32, 32]} className="mt-6">
         <Col span={24}>
-          <Title level={4}>Please wait 30 seconds while our AI Generates your starting image.</Title>
+          {concept.resultImages?.filter(data => data.status == "completed").length > 0 ? <Title level={4} className="bg-purple-500 rounded-full p-3 !text-white">These images are <span className="text-black font-bold">AI Generated</span>. Use words to change them however you want.</Title> : <Title level={4}>Please wait 30 seconds while our AI Generates your starting image.</Title>}
         </Col>
         {/* <Col span={24}>
           <div className="border-1 border-solid border-gray-300 bg-gray-100 py-2 px-4 text-left">
@@ -166,10 +166,19 @@ function Result() {
                 <Image src={`${url}`} width={'100%'} />
               </Col>)}
             </Image.PreviewGroup>}
-            {(data.status !== 'completed' && data.status !== 'failed') && new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
-              <div className="loader"></div>
-              <p className="mb-0">Generating...</p>
-            </div></Col>)}
+            {(data.status !== 'completed' && data.status !== 'failed') && (concept.resultImages.length > 1 ? concept.resultImages[0].urls.map((url, index1) => <Col key={`${index}_${index1}`} span={6}><div className="relative flex justify-center items-center flex-col bg-gray-200">
+              <img src={`${constants.SOCKET_URL}${url}`} className="w-full blur-lg" alt="product" />
+              <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
+                <div className="loader"></div>
+                <p className="mb-0">Generating...</p>
+              </div>
+            </div></Col>) : new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200 relative">
+              <img src={`${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur-lg" alt="product" />
+              <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
+                <div className="loader"></div>
+                <p className="mb-0">Generating...</p>
+              </div>
+            </div></Col>))}
             {data.status == 'failed' && new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
               {/* <div className="loader"></div> */}
               <p className="mb-0">Failed</p>
@@ -211,7 +220,7 @@ function Result() {
 
               <div className="mt-1 text-right">
                 <Button type="text" onClick={() => {
-                  
+
                   setIsAdvanced((prev) => {
                     prev[index] = !prev[index];
                     return [...prev];
