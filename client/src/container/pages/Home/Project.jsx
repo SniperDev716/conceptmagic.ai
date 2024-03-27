@@ -30,7 +30,7 @@ function Project() {
 
   return (
     <div className="text-center max-w-5xl w-screen mx-auto p-2">
-      <Row gutter={[24, 24]} className="mt-6">
+      <Row gutter={[24, 24]} className="mt-6 items-stretch">
         <Col span={24}>
           <Title level={2}>My Projects</Title>
         </Col>
@@ -48,8 +48,9 @@ function Project() {
               key={index}
               style={{
                 width: "100%",
+                height: "100%"
               }}
-              cover={<img alt="image" src={proj.inputImages[0].path.includes('https://') ? `${proj.inputImages[0].path}` : `${constants.SOCKET_URL}${proj.inputImages[0].path}`} />}
+              cover={<img alt="image" className="h-[200px] w-auto" src={proj.inputImages[0].path.includes('https://') ? `${proj.inputImages[0].path}` : `${constants.SOCKET_URL}${proj.inputImages[0].path}`} />}
             >
               <Meta title={proj.name || "Untitled"} description="" />
             </Card>
