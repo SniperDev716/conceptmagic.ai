@@ -1,17 +1,19 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Dropdown } from 'antd';
+import { Avatar, Button, Dropdown } from 'antd';
 import { LockOutlined, UserOutlined, AreaChartOutlined, SafetyOutlined, IdcardOutlined, UnorderedListOutlined, CommentOutlined, FileImageOutlined } from '@ant-design/icons';
 
 import { logout } from '../../../redux/auth/authSlice';
 
+import avatarImage from "../../../assets/images/avatar.png";
+
 const items = [
-  {
-    label: 'My projects',
-    key: '/projects',
-    icon: <FileImageOutlined />,
-  },
+  // {
+  //   label: 'My projects',
+  //   key: '/projects',
+  //   icon: <FileImageOutlined />,
+  // },
   // {
   //   label: 'Plans',
   //   key: '/plans',
@@ -71,7 +73,8 @@ const UserMenu = () => {
       placement="bottom"
       arrow
     >
-      <Button type='primary' size='large' icon={<UserOutlined />}>{user.name}</Button>
+      {/* <Button type='primary' size='large' icon={<UserOutlined />}>{user.name}</Button> */}
+      <Avatar src={avatarImage} className='mr-6 shadow-lg cursor-pointer' />
     </Dropdown>
   )
 };

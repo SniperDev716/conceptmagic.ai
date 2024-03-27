@@ -1,10 +1,11 @@
 import React from "react";
-import { Layout } from "antd";
+import { Button, Layout } from "antd";
 import { Link } from "react-router-dom";
 
 import LogoSrc from "../../assets/images/logo.png";
 import smLogoSrc from "../../assets/images/logo-sm.png";
 import UserMenu from "./partials/UserMenu";
+import { FileAddOutlined, PlusOutlined } from "@ant-design/icons";
 
 const { Header } = Layout;
 
@@ -22,9 +23,14 @@ function AuthLayout({ children }) {
         </div>
         <div className="flex items-center">
           <div>
-            {/* <Link to="/projects" className="mr-4">
-              Projects
-            </Link> */}
+            <Link to="/projects" className="mr-6">
+              My Projects
+            </Link>
+          </div>
+          <div>
+            <Link to="/home" className="mr-6">
+              <Button type="primary" icon={<FileAddOutlined />}>New Project</Button>
+            </Link>
           </div>
           <UserMenu />
         </div>

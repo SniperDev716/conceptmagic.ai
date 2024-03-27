@@ -11,6 +11,12 @@ exports.getDescription = async (image_url) => {
       model: 'gpt-4-vision-preview',
       messages: [
         {
+          role: "system",
+          content: [
+            { type: "text", text: "You are a helpful GPT-4 assistant designed to describe the image provided in a detailed manner, like a BLIP captioning model. The goal is for another text-to-image model to be able to recreate the image from your description, so be extremely accurate and detailed in describing the image." },
+          ]
+        },
+        {
           role: "user",
           content: [
             {
