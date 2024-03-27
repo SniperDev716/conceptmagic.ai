@@ -125,7 +125,7 @@ function UploadContainer() {
   }
 
   return (
-    <div className="text-center max-w-5xl w-screen mx-auto p-2 md:px-6">
+    <div className="text-center max-w-5xl w-screen mx-auto px-6 md:px-2 p-2">
       <Row gutter={[24, 24]} className="mt-6">
         <Col span={24}>
           <Title level={3}>Select an image that you'd like to use as a starting point.</Title>
@@ -134,7 +134,7 @@ function UploadContainer() {
           <div className="max-w-xl absolute z-50 right-10 top-5">
             <Input.Search size="large" className="[&_input]:opacity-70 [&_input:hover]:opacity-100 [&_input:focus]:opacity-100" onSearch={() => handleSearch()} loading={pinLoading} value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <div id="imagelistview" className="max-h-[calc(100vh_-_425px)] min-h-[365px] overflow-y-auto overflow-x-hidden border-4 border-solid border-blue-400 rounded-lg">
+          <div id="imagelistview" className="max-h-[calc(100vh_-_425px)] overflow-y-auto overflow-x-hidden border-4 border-solid border-blue-400 rounded-lg">
             {/* <Row gutter={[32, 32]}>
               {pinImages.map((image, index) => <Col span={6}>
                 <Image src={image} alt="pin" />
@@ -146,7 +146,7 @@ function UploadContainer() {
               next={() => { getPinImages() }}
               hasMore={true}
               scrollableTarget="imagelistview"
-              height="calc(100vh - 440px) min-h-[350px]"
+              height="calc(100vh - 440px)"
               loader={
                 <div className="mt-2 flex">
                   <div className="w-1/4 p-1">

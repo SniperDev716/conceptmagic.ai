@@ -63,7 +63,7 @@ function Result() {
 
     return () => {
       if (socket) {
-        // socket.off('IMAGE_GENERATED');
+        socket.off('IMAGE_GENERATED');
       }
     }
   }, []);
