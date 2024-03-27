@@ -44,9 +44,11 @@ exports.getImageDescriptions = async (req, res) => {
     let name = req.body.name || "Untitled";
     let inputImages = [];
     for (const file of fileLists) {
-      let desc = await getDescription(`http://46.175.146.14${file}`);
-      // let desc = await getDescription(`http://54.173.222.178${file}`);
-
+      let path = file.includes("https://") ? file : `http://46.175.146.14:5000${file}`;
+      // let path = file.includes("https://") ? file : `http://54.173.222.178${file}`;
+      let desc = await getDescription(path);
+      
+      console.log(desc);
       inputImages.push({
         path: file,
         desc,
@@ -202,7 +204,6 @@ exports.getProjects = async (req, res) => {
 
 exports.getImagesfromPin = async (req, res) => {
   const { query, token, bookmarks, cookie } = req.body;
-
   try {
     let data = await pinterestSearch(query, cookie, token, bookmarks);
     return res.json({

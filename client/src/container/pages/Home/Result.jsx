@@ -68,6 +68,8 @@ function Result() {
     }
   }, []);
 
+  // console.log(advancedValue, isAdvanced);
+
   // useEffect(() => {
   //   // console.log(id, plan);
   //   // if(!plan && !id) {
@@ -161,19 +163,19 @@ function Result() {
         <div className="bg-white p-4 rounded shadow mb-4 w-full">
           {(!concept.resultImages?.length) && <div className="w-full h-44 bg-center bg-no-repeat bg-[length:400px_300px]" style={{ backgroundImage: `url(${loadingGif})`, backgroundColor: "#E9E9EB" }}><br /><br /><br /><br /><br /><br /><br /><br />Loading...</div>}
           {concept.resultImages?.map((data, index) => <Row gutter={[12, 12]} key={index}>
-            {data.urls.length > 0 && <Image.PreviewGroup>
-              {data.urls.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
+            {data.urls?.length > 0 && <Image.PreviewGroup>
+              {data.urls?.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
                 <Image src={`${url}`} width={'100%'} />
               </Col>)}
             </Image.PreviewGroup>}
             {(data.status !== 'completed' && data.status !== 'failed') && (concept.resultImages.length > 1 ? concept.resultImages[0].urls.map((url, index1) => <Col key={`${index}_${index1}`} span={6}><div className="relative flex justify-center items-center flex-col bg-gray-200">
-              <img src={`${constants.SOCKET_URL}${url}`} className="w-full blur-lg" alt="product" />
+              <img src={`${url}`} className="w-full blur-lg" alt="product" />
               <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                 <div className="loader"></div>
                 <p className="mb-0">Generating...</p>
               </div>
             </div></Col>) : new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200 relative">
-              <img src={`${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur-lg" alt="product" />
+              <img src={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur-lg" alt="product" />
               <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                 <div className="loader"></div>
                 <p className="mb-0">Generating...</p>
@@ -222,8 +224,10 @@ function Result() {
                 <Button type="text" onClick={() => {
 
                   setIsAdvanced((prev) => {
-                    prev[index] = !prev[index];
-                    return [...prev];
+                    // prev[index] = !prev[index];
+                    let tmp = [...prev];
+                    tmp[index] = !tmp[index];
+                    return [...tmp];
                   });
                 }}>{isAdvanced[index] ? "Basic Mode" : "Advanced"}</Button>
               </div>

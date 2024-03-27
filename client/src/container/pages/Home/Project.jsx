@@ -36,7 +36,7 @@ function Project() {
         </Col>
         <Col span={24}>
           <div className="text-right">
-            <Link to={`/upload`}>
+            <Link to={`/home`}>
               <Button type="primary" icon={<FileAddOutlined />}>New Project</Button>
             </Link>
           </div>
@@ -49,7 +49,7 @@ function Project() {
               style={{
                 width: "100%",
               }}
-              cover={<img alt="image" src={`${constants.SOCKET_URL}${proj.inputImages[0].path}`} />}
+              cover={<img alt="image" src={proj.inputImages[0].path.includes('https://') ? `${proj.inputImages[0].path}` : `${constants.SOCKET_URL}${proj.inputImages[0].path}`} />}
             >
               <Meta title={proj.name || "Untitled"} description="" />
             </Card>
