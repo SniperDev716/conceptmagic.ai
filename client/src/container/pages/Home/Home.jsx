@@ -9,24 +9,24 @@ const { Content, Sider } = Layout;
 const { Title, Text } = Typography;
 
 const categories = [
-  { src: "(1) Product Design.png", title: "Product Design" },
-  { src: "(2) Packaging.png", title: "Package Design" },
-  { src: "(3) Logo design.png", title: "Logo Design" },
-  { src: "(4) Resturant Design.png", title: "Resturant Design" },
-  { src: "(5) Home Design.png", title: "Room Design" },
-  { src: "(6) Store Design.png", title: "Store Design" },
-  { src: "(7) Advertisement.png", title: "Advertisement Design" },
-  { src: "(8) App Design.png", title: "App Design" },
-  { src: "(9) Website Design.png", title: "Website Design" },
-  { src: "(10) Flyer Design.png", title: "Flyer Design" },
-  { src: "(11) Business Cards.png", title: "Business Cards" },
-  { src: "(12) Sticker Design.png", title: "Sticker Design" },
-  { src: "(13) Album Art.png", title: "Album Art" },
-  { src: "(14) Signage.png", title: "Signage Design" },
-  { src: "(15) Automotive.png", title: "Automotive Design" },
-  { src: "(16) Fashion.png", title: "Fashion Design" },
-  { src: "(17) Furniture.png", title: "Furniture Design" },
-  { src: "(18) Film Concept Art.png", title: "Film Concept Art" },
+  { src: "(1) Product Design.webp", title: "Product Design" },
+  { src: "(2) Packaging.webp", title: "Package Design" },
+  { src: "(3) Logo design.webp", title: "Logo Design" },
+  { src: "(4) Resturant Design.webp", title: "Resturant Design" },
+  { src: "(5) Home Design.webp", title: "Room Design" },
+  { src: "(6) Store Design.webp", title: "Store Design" },
+  { src: "(7) Advertisement.webp", title: "Advertisement Design" },
+  { src: "(8) App Design.webp", title: "App Design" },
+  { src: "(9) Website Design.webp", title: "Website Design" },
+  { src: "(10) Flyer Design.webp", title: "Flyer Design" },
+  { src: "(11) Business Cards.webp", title: "Business Cards" },
+  { src: "(12) Sticker Design.webp", title: "Sticker Design" },
+  { src: "(13) Album Art.webp", title: "Album Art" },
+  { src: "(14) Signage.webp", title: "Signage Design" },
+  { src: "(15) Automotive.webp", title: "Automotive Design" },
+  { src: "(16) Fashion.webp", title: "Fashion Design" },
+  { src: "(17) Furniture.webp", title: "Furniture Design" },
+  { src: "(18) Film Concept Art.webp", title: "Film Concept Art" },
 ]
 
 function Home() {
@@ -60,7 +60,7 @@ function Home() {
         <Col span={24}>
           <Row gutter={[32, 32]}>
             {categories.map((cat, index) => <Col key={index} span={8}>
-              <div className="text-center">
+              <div className="text-center hover:-m-1">
                 <img src={`/imgs/category/${cat.src}`} className="w-[80%] mx-auto bg-gray-300 cursor-pointer rounded shadow-sm hover:shadow-lg" onClick={() => handleNext(cat)}></img> <br />
                 <Text className="text-xl font-bold">{cat.title}</Text>
               </div>

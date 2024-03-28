@@ -12,6 +12,7 @@ import { generateImage, getConceptById, getImageDescription } from "../../../ser
 import { useSocket } from "../../../context/socket";
 
 import loadingGif from "../../../assets/images/loading.gif";
+import usePrevious from "../../../Hooks/usePrevious";
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -39,6 +40,7 @@ function Result() {
   const [tags, setTags] = useState([]);
   const [advancedValue, setAdvancedValue] = useState([]);
   const [basicValue, setBasicValue] = useState([]);
+  const prevConcept = usePrevious(concept);
 
   useEffect(() => {
     const getImage = () => {
@@ -67,6 +69,13 @@ function Result() {
       }
     }
   }, []);
+
+
+  useEffect(() => {
+    if (concept?.resultImages?.length - prevConcept?.resultImages?.length == 1) {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+  }, [concept?.resultImages?.length]);
 
   // console.log(advancedValue, isAdvanced);
 
@@ -160,25 +169,25 @@ function Result() {
             {keywords.map((keyword, index) => <Tag className="my-1 relative group/item" key={index}>{keyword} <span className="absolute -top-2 -right-2 cursor-pointer group-hover/item:inline hidden" onClick={() => { handleRemove(index) }}><CloseCircleTwoTone twoToneColor="#F00" /></span></Tag>)}
           </div>
         </Col> */}
-        <div className="bg-white p-4 rounded shadow mb-4 w-full">
-          {(!concept.resultImages?.length) && <div className="w-full h-44 bg-center bg-no-repeat bg-[length:400px_300px]" style={{ backgroundImage: `url(${loadingGif})`, backgroundColor: "#E9E9EB" }}><br /><br /><br /><br /><br /><br /><br /><br />Loading...</div>}
-          {concept.resultImages?.map((data, index) => <Row gutter={[12, 12]} key={index}>
+        <div className="bg-white p-4 rounded shadow-none mb-4 w-full">
+          {(!concept.resultImages) && <div className="w-full h-44 bg-center bg-no-repeat bg-[length:400px_300px]" style={{ backgroundImage: `url(${loadingGif})`, backgroundColor: "#E9E9EB" }}><br /><br /><br /><br /><br /><br /><br /><br />Loading...</div>}
+          {concept.resultImages?.map((data, index) => <Row gutter={[24, 24]} key={index}>
             {data.urls?.length > 0 && <Image.PreviewGroup>
               {data.urls?.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
                 <Image src={`${url}`} width={'100%'} />
               </Col>)}
             </Image.PreviewGroup>}
             {(data.status !== 'completed' && data.status !== 'failed') && (concept.resultImages.length > 1 ? concept.resultImages[0].urls.map((url, index1) => <Col key={`${index}_${index1}`} span={6}><div className="relative flex justify-center items-center flex-col bg-gray-200">
-              <img src={`${url}`} className="w-full blur-lg" alt="product" />
+              <img src={`${url}`} className="w-full blur" alt="product" />
               <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                 <div className="loader"></div>
-                <p className="mb-0">Generating...</p>
+                <p className="mb-0 text-white mt-2">Generating...</p>
               </div>
             </div></Col>) : new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200 relative">
-              <img src={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur-lg" alt="product" />
+              <img src={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur" alt="product" />
               <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                 <div className="loader"></div>
-                <p className="mb-0">Generating...</p>
+                <p className="mb-0 text-white mt-2">Generating...</p>
               </div>
             </div></Col>))}
             {data.status == 'failed' && new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
@@ -218,26 +227,29 @@ function Result() {
                   tmp[index] = e.target.value;
                   setBasicValue(tmp);
                 }
-              }} />
-
+              }}
+                // autoFocus
+                disabled={data.status != 'completed' && data.status != 'failed'}
+              />
               <div className="mt-1 text-right">
-                <Button type="text" onClick={() => {
-
-                  setIsAdvanced((prev) => {
-                    // prev[index] = !prev[index];
-                    let tmp = [...prev];
-                    tmp[index] = !tmp[index];
-                    return [...tmp];
-                  });
-                }}>{isAdvanced[index] ? "Basic Mode" : "Advanced"}</Button>
+                <Button type="text"
+                  disabled={data.status != 'completed' && data.status != 'failed'}
+                  onClick={() => {
+                    setIsAdvanced((prev) => {
+                      // prev[index] = !prev[index];
+                      let tmp = [...prev];
+                      tmp[index] = !tmp[index];
+                      return [...tmp];
+                    });
+                  }}>{isAdvanced[index] ? "Basic Mode" : "Advanced"}</Button>
               </div>
             </Col>
             <Col span={24}>
               <div className="text-center mb-4">
                 <Button type="primary" size="large" onClick={() => handleGenerate(data.imageId, index)} loading={loading == index}>Generate</Button>
               </div>
+              <Divider />
             </Col>
-            <Divider />
           </Row>)}
         </div>
       </Row>

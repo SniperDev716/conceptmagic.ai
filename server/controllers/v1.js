@@ -3,6 +3,7 @@ const { getDescription, getPromptByKeywords } = require("../utils/chatGPT");
 const ConceptModel = require('../models/concepts');
 const { _generateImage, _getImages } = require('../utils/imagineAPI');
 const { pinterestSearch } = require('../scripts/pinSearch');
+const UserModel = require('../models/userModel');
 
 exports.upload = async (req, res) => {
   try {
@@ -45,13 +46,13 @@ exports.getImageDescriptions = async (req, res) => {
     let inputImages = [];
     for (const file of fileLists) {
       // let path = file.includes("https://") ? file : `http://46.175.146.14:5000${file}`;
-      let path = file.includes("https://") ? file : `http://54.173.222.178${file}`;
-      let desc = await getDescription(path);
+      // let path = file.includes("https://") ? file : `http://54.173.222.178${file}`;
+      // let desc = await getDescription(path);
+      // console.log(desc);
 
-      console.log(desc);
       inputImages.push({
         path: file,
-        desc,
+        // desc,
       });
     };
     if (inputImages.length == 0) {
@@ -61,35 +62,53 @@ exports.getImageDescriptions = async (req, res) => {
       });
     }
 
-    let prompt = inputImages[0].desc/* await getPromptByKeywords(inputImages[0].desc) */;
+    // let prompt = inputImages[0].desc/* await getPromptByKeywords(inputImages[0].desc) */;
 
-    let data = await _generateImage(prompt);
+    // if (!prompt) {
+    //   return res.status(400).json({
+    //     succes: false,
+    //     message: "Error get image descriotion.",
+    //   });
+    // }
+
+    // let data = await _generateImage(prompt);
 
     let concept = new ConceptModel({
       inputImages,
       userId: req.user._id,
       name,
-      resultImages: [{ imageId: data.id, prompt, status: data.status }]
+      resultImages: [{ imageId: "tmp", status: "processing" }]
     });
 
     await concept.save();
 
-    _getImages(data.id).then(async (_res) => {
-      await ConceptModel.updateOne(
-        {
-          _id: concept._id,
-          'resultImages.imageId': data.id
-        },
-        {
-          $set: {
-            'resultImages.$.urls': _res.upscaled_urls,
-            'resultImages.$.status': _res.status,
-          }
-        }, { new: true });
-      req.app.get('io').to(req.user.socketId).emit('IMAGE_GENERATED', {
-        success: true,
+    // let path = inputImages[0].path.includes("https://") ? inputImages[0].path : `http://46.175.146.14:5000${inputImages[0].path}`;
+    let path = inputImages[0].path.includes("https://") ? inputImages[0].path : `http://54.173.222.178${inputImages[0].path}`;
+    getDescription(path).then(prompt => {
+      concept.inputImages[0].desc = prompt;
+      _generateImage(prompt).then(async data => {
+        concept.resultImages = [{ imageId: data.id, prompt, status: data.status }];
+        await concept.save();
+        _getImages(data.id).then(async (_res) => {
+          await ConceptModel.updateOne(
+            {
+              _id: concept._id,
+              'resultImages.imageId': data.id
+            },
+            {
+              $set: {
+                'resultImages.$.urls': _res.upscaled_urls,
+                'resultImages.$.status': _res.status,
+              }
+            }, { new: true });
+          let user = await UserModel.findById(req.user._id);
+          req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
+            success: true,
+          });
+        });
       });
     });
+
 
     return res.json({
       success: true,
@@ -140,36 +159,56 @@ exports.generateImage = async (req, res) => {
       let img = concept.resultImages.filter(img => img.imageId == imageId);
       prevPrompt = img[0].prompt;
     }
-    let prompt = keywords;
-    if (!isAdvanced && keywords) {
-      prompt = await getPromptByKeywords(keywords, prevPrompt);
-    }
-
-    prompt = prompt || prevPrompt;
-
-    let data = await _generateImage(prompt);
-
-    concept.resultImages = [...concept.resultImages, { imageId: data.id, prompt, status: data.status }];
-
+    // new Promise()
+    let tmpId = Date.now();
+    concept.resultImages = [...concept.resultImages, { imageId: tmpId, status: "processing" }];
     await concept.save();
+    new Promise(async () => {
+      let prompt = keywords;
+      if (!isAdvanced && keywords) {
+        prompt = await getPromptByKeywords(keywords, prevPrompt);
+      }
 
-    _getImages(data.id).then(async (_res) => {
+      prompt = prompt || prevPrompt;
+
+      let data = await _generateImage(prompt);
+
       await ConceptModel.updateOne(
         {
           _id: concept._id,
-          'resultImages.imageId': data.id
+          'resultImages.imageId': tmpId
         },
         {
           $set: {
-            'resultImages.$.urls': _res.upscaled_urls,
-            'resultImages.$.status': _res.status,
+            'resultImages.$.imageId': data.id,
+            'resultImages.$.prompt': prompt,
+            'resultImages.$.status': data.status,
           }
         }, { new: true });
-      req.app.get('io').to(req.user.socketId).emit('IMAGE_GENERATED', {
-        success: true,
+
+      // concept.resultImages = [...concept.resultImages, { imageId: data.id, prompt, status: data.status }];
+
+      // await concept.save();
+
+      _getImages(data.id).then(async (_res) => {
+        await ConceptModel.updateOne(
+          {
+            _id: concept._id,
+            'resultImages.imageId': data.id
+          },
+          {
+            $set: {
+              'resultImages.$.urls': _res.upscaled_urls,
+              'resultImages.$.status': _res.status,
+            }
+          }, { new: true });
+        let user = await UserModel.findById(req.user._id);
+        req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
+          success: true,
+        });
+        // console.log(req.user.socketId, '--=-=-=-=-=-=-=-=-=-=-=-=-');
       });
     });
-
     return res.json({
       success: true,
       concept,
@@ -188,7 +227,7 @@ exports.getProjects = async (req, res) => {
   try {
     const projects = await ConceptModel.find({
       userId: req.user._id
-    });
+    }).sort('-createdAt');
     return res.json({
       success: false,
       projects

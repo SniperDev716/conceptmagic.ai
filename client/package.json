@@ -19,6 +19,7 @@
     "axios": "^1.4.0",
     "caniuse-lite": "^1.0.30001600",
     "classnames": "^2.3.2",
+    "dayjs": "^1.11.10",
     "html-react-parser": "^4.0.0",
     "jquery": "^3.7.0",
     "jwt-decode": "^3.1.2",

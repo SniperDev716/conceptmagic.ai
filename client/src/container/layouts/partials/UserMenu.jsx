@@ -70,11 +70,11 @@ const UserMenu = () => {
         onClick: handleClick,
       }}
       trigger='click'
-      placement="bottom"
+      placement="bottomLeft"
       arrow
     >
       {/* <Button type='primary' size='large' icon={<UserOutlined />}>{user.name}</Button> */}
-      <Avatar src={avatarImage} className='mr-6 shadow-lg cursor-pointer' />
+      <Avatar src={avatarImage} className='shadow-lg cursor-pointer' />
     </Dropdown>
   )
 };
