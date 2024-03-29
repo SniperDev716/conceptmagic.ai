@@ -48,7 +48,7 @@ exports._getImages = async (imageId, req) => {
       if (user.socketId) {
         req.app.get('io').to(user.socketId).emit("IMAGE_PROCESS", {
           progress: data.progress,
-          status: data.status,
+          status: data.status.replace('pending', 'uploading').replace('in-progress', 'generating'),
           id: data.id,
         });
       }
