@@ -35,11 +35,11 @@ const items = [
         key: '/admin/users',
         icon: <UserOutlined />,
       },
-      {
-        label: 'Analyze',
-        key: '/admin/analyze',
-        icon: <AreaChartOutlined />,
-      },
+      // {
+      //   label: 'Analyze',
+      //   key: '/admin/analyze',
+      //   icon: <AreaChartOutlined />,
+      // },
     ]
   },
   {

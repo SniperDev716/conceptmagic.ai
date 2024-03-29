@@ -51,42 +51,42 @@ function Users() {
       dataIndex: "email",
       key: "email",
     },
-    {
-      title: "🛒",
-      dataIndex: "_id",
-      key: "activeSubscriptionId",
-      render: (_, row) => {
-        if (row.activeSubscriptionId?.planId?.price) {
-          return (
-            <Tag color="#108ee9">
-              ${row.activeSubscriptionId?.planId?.price}
-            </Tag>
-          );
-        }
-      },
-    },
-    {
-      title: "Plan",
-      dataIndex: "plan",
-      key: "plan",
-      render: (_, row) => {
-        if (row.plan) {
-          return (
-            <>
-            <Tooltip placement="top" title={"Property"}>
-              <Tag color="#108ee9">{_.property}</Tag>
-            </Tooltip>
-            <Tooltip placement="top" title={"Document"}>
-              <Tag color="#108ee9">{_.document}</Tag>
-            </Tooltip>
-            {/* <Tooltip placement="top" title={"Account"}>
-              <Tag color="#108ee9">{_.property}</Tag>
-            </Tooltip> */}
-            </>
-          );
-        }
-      },
-    },
+    // {
+    //   title: "🛒",
+    //   dataIndex: "_id",
+    //   key: "activeSubscriptionId",
+    //   render: (_, row) => {
+    //     if (row.activeSubscriptionId?.planId?.price) {
+    //       return (
+    //         <Tag color="#108ee9">
+    //           ${row.activeSubscriptionId?.planId?.price}
+    //         </Tag>
+    //       );
+    //     }
+    //   },
+    // },
+    // {
+    //   title: "Plan",
+    //   dataIndex: "plan",
+    //   key: "plan",
+    //   render: (_, row) => {
+    //     if (row.plan) {
+    //       return (
+    //         <>
+    //         <Tooltip placement="top" title={"Property"}>
+    //           <Tag color="#108ee9">{_.property}</Tag>
+    //         </Tooltip>
+    //         <Tooltip placement="top" title={"Document"}>
+    //           <Tag color="#108ee9">{_.document}</Tag>
+    //         </Tooltip>
+    //         {/* <Tooltip placement="top" title={"Account"}>
+    //           <Tag color="#108ee9">{_.property}</Tag>
+    //         </Tooltip> */}
+    //         </>
+    //       );
+    //     }
+    //   },
+    // },
     {
       title: "UTM source",
       dataIndex: "utm_source",
@@ -116,32 +116,44 @@ function Users() {
       },
     },
     {
-      title: "Action",
-      key: "_id",
-      render: (_, row) => (
-        <Space size="middle">
-          <Button
-            type="primary"
-            size="small"
-            onClick={() => {
-              // if(row.activeSubscriptionId) {
-                setSelectedUser(row);
-                form.setFieldValue('property', row.plan?.property || 1);
-                form.setFieldValue('document', row.plan?.document || 1);
-                setShowGiveModal(true);
-              // } else {
-              //   message.warning("No active subscription.");
-              // }
-            }}
-          >
-            Give
-          </Button>
-          <Link to={`/admin/users/${row._id}/history`}>
-            <Button type="dashed" danger size="small">View</Button>
-          </Link>
-        </Space>
-      ),
+      title: "Projects",
+      dataIndex: "projects",
+      key: "projects",
+      render: (_, row) => {
+        console.log(_);
+        return <Link to={`/projects/${row._id}`}><Button size="small">{_?.length || 0}/{_.reduce(
+          (accumulator, item) => accumulator + item.resultImages.length,
+          0,
+        )}</Button></Link>;
+      },
     },
+    // {
+    //   title: "Action",
+    //   key: "_id",
+    //   render: (_, row) => (
+    //     <Space size="middle">
+    //       <Button
+    //         type="primary"
+    //         size="small"
+    //         onClick={() => {
+    //           // if(row.activeSubscriptionId) {
+    //             setSelectedUser(row);
+    //             form.setFieldValue('property', row.plan?.property || 1);
+    //             form.setFieldValue('document', row.plan?.document || 1);
+    //             setShowGiveModal(true);
+    //           // } else {
+    //           //   message.warning("No active subscription.");
+    //           // }
+    //         }}
+    //       >
+    //         Give
+    //       </Button>
+    //       <Link to={`/admin/users/${row._id}/history`}>
+    //         <Button type="dashed" danger size="small">View</Button>
+    //       </Link>
+    //     </Space>
+    //   ),
+    // },
   ];
 
   useEffect(() => {
@@ -277,7 +289,7 @@ function Users() {
               },
             ]}
           >
-            <InputNumber className="w-full" size="large" min={1}/>
+            <InputNumber className="w-full" size="large" min={1} />
           </Form.Item>
           <Form.Item
             name="document"

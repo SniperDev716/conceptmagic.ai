@@ -12,6 +12,12 @@ const routes = [
     exact: true,
   },
   {
+    path: 'projects/:id',
+    component: lazy(() => import('../pages/Home/Project')),
+    exact: true,
+    isAdmin: true,
+  },
+  {
     path: 'upload',
     component: lazy(() => import('../pages/Home/Upload')),
     exact: true,

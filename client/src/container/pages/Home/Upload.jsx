@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Col, Divider, Image, Input, Layout, Row, Skeleton, Spin, Typography, Upload, message } from "antd";
+import { AutoComplete, Button, Col, Divider, Image, Input, Layout, Row, Skeleton, Spin, Typography, Upload, message } from "antd";
 import { FileImageOutlined, SelectOutlined, UploadOutlined } from "@ant-design/icons";
 import Gallery from "react-photo-gallery";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -12,6 +12,7 @@ import { getStorage } from "../../../helpers";
 import { getPlan } from "../../../redux/auth/authSlice";
 import { deleteFile, getImageDescription, getImagesfromPin } from "../../../services/v1API";
 import SelectedImage from "./Partials/SelectedImage";
+import { categories } from "./Home";
 
 const { Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -131,8 +132,22 @@ function UploadContainer() {
           <Title level={3}>Select an image that you'd like to use as a starting point.</Title>
         </Col>
         <Col span={24} className="">
-          <div className="max-w-md mb-2 ml-auto">
-            <Input.Search size="large" /* className="[&_input]:opacity-70 [&_input:hover]:opacity-100 [&_input:focus]:opacity-100" */ onSearch={() => handleSearch()} loading={pinLoading} value={search} onChange={(e) => setSearch(e.target.value)} />
+          <div className="w-full mb-2">
+            <AutoComplete
+              style={{
+                width: "100%",
+              }}
+              options={categories}
+              filterOption={(inputValue, option) =>
+                option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+              }
+              value={search}
+              onChange={(e) => {
+                setSearch(e);
+              }}
+            >
+              <Input.Search size="large" /* className="[&_input]:opacity-70 [&_input:hover]:opacity-100 [&_input:focus]:opacity-100" */ onSearch={() => handleSearch()} allowClear loading={pinLoading} placeholder="Search images.." />
+            </AutoComplete>
           </div>
           <div id="imagelistview" className="max-h-[calc(100vh_-_425px)] min-h-[350px] overflow-y-auto overflow-x-hidden border-4 border-solid border-blue-400 rounded-lg">
             {/* <Row gutter={[32, 32]}>

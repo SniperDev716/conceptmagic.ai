@@ -26,27 +26,6 @@ const UserSchema = new Schema(
     socketId: {
       type: String,
     },
-    sources: [
-      {
-        name: String,
-        sourceId: String,
-        // documents: [String],
-        messages: [
-          {
-            text: String,
-            isChatOwner: Boolean,
-            sentBy: String,
-            sentAt: { type: Date, default: new Date() },
-            sourceDocuments: [
-              {
-                pageContent: String,
-                metadata: Object,
-              },
-            ],
-          },
-        ],
-      },
-    ],
     utm_source: {
       type: String,
     },
@@ -83,11 +62,10 @@ const UserSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'subscriptions',
     },
-    plan: {
-      property: Number,
-      document: Number,
-      teamMember: Number,
-    },
+    projects: [{
+      type: Schema.Types.ObjectId,
+      ref: 'concepts',
+    }]
   },
   {
     timestamps: true,

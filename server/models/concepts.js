@@ -22,12 +22,10 @@ const conceptSchema = new Schema(
                     type: [String]
                 },
                 prompt: String,
-                imageId: {
-                    type: String,
-                },
-                status: {
-                    type: String,
-                }
+                parent: String,
+                imageId: String,
+                status: String,
+                addition: String,
             }
         ],
     },

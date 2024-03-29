@@ -81,7 +81,8 @@ exports.getImageDescriptions = async (req, res) => {
     });
 
     await concept.save();
-
+    req.user.projects = [...req.user.projects, concept._id];
+    await req.user.save();
     // let path = inputImages[0].path.includes("https://") ? inputImages[0].path : `http://46.175.146.14:5000${inputImages[0].path}`;
     let path = inputImages[0].path.includes("https://") ? inputImages[0].path : `http://54.173.222.178${inputImages[0].path}`;
     getDescription(path).then(prompt => {
@@ -89,7 +90,7 @@ exports.getImageDescriptions = async (req, res) => {
       _generateImage(prompt).then(async data => {
         concept.resultImages = [{ imageId: data.id, prompt, status: data.status }];
         await concept.save();
-        _getImages(data.id).then(async (_res) => {
+        _getImages(data.id, req).then(async (_res) => {
           await ConceptModel.updateOne(
             {
               _id: concept._id,
@@ -102,9 +103,11 @@ exports.getImageDescriptions = async (req, res) => {
               }
             }, { new: true });
           let user = await UserModel.findById(req.user._id);
-          req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
-            success: true,
-          });
+          if (user.socketId) {
+            req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
+              success: true,
+            });
+          }
         });
       });
     });
@@ -161,7 +164,7 @@ exports.generateImage = async (req, res) => {
     }
     // new Promise()
     let tmpId = Date.now();
-    concept.resultImages = [...concept.resultImages, { imageId: tmpId, status: "processing" }];
+    concept.resultImages = [...concept.resultImages, { imageId: tmpId, parent: imageId, addition: prevPrompt ? keywords : "", status: "processing" }];
     await concept.save();
     new Promise(async () => {
       let prompt = keywords;
@@ -190,7 +193,7 @@ exports.generateImage = async (req, res) => {
 
       // await concept.save();
 
-      _getImages(data.id).then(async (_res) => {
+      _getImages(data.id, req).then(async (_res) => {
         await ConceptModel.updateOne(
           {
             _id: concept._id,
@@ -203,9 +206,11 @@ exports.generateImage = async (req, res) => {
             }
           }, { new: true });
         let user = await UserModel.findById(req.user._id);
-        req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
-          success: true,
-        });
+        if (user.socketId) {
+          req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
+            success: true,
+          });
+        }
         // console.log(req.user.socketId, '--=-=-=-=-=-=-=-=-=-=-=-=-');
       });
     });
@@ -225,8 +230,12 @@ exports.generateImage = async (req, res) => {
 
 exports.getProjects = async (req, res) => {
   try {
+    let userId = req.user._id;
+    if (req.params.id) {
+      userId = req.params.id;
+    }
     const projects = await ConceptModel.find({
-      userId: req.user._id
+      userId
     }).sort('-createdAt');
     return res.json({
       success: false,

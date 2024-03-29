@@ -38,10 +38,10 @@ exports.getUsers = async (req, res) => {
   }
   const skip = (page - 1) * limit;
   const total = await User.count(where);
-  const users = await User.find(where).select({sources: 0, password: 0}).populate({
+  const users = await User.find(where).select({ password: 0 }).populate({
     path: 'activeSubscriptionId',
     populate: 'planId',
-  }).skip(skip).limit(limit);
+  }).populate('projects').skip(skip).limit(limit);
   return res.json({
     success: true,
     users,
@@ -91,7 +91,7 @@ exports.updatePassword = async (req, res) => {
 }
 
 exports.deleteAccount = async (req, res) => {
-  const { password} = req.body;
+  const { password } = req.body;
   const isValid = await req.user.isValidPassword(password);
   if (!isValid) {
     return res.status(401).json({

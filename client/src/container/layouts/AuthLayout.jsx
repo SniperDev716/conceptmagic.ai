@@ -23,12 +23,12 @@ function AuthLayout({ children }) {
         </div>
         <div className="flex items-center">
           <div>
-            <Link to="/projects" className="mr-6">
+            <Link to="/projects" className="mr-2 sm:mr-6">
               My Projects
             </Link>
           </div>
           <div>
-            <Link to="/home" className="mr-6">
+            <Link to="/home" className="mr-2 sm:mr-6">
               <Button type="primary" icon={<FileAddOutlined />}>New Project</Button>
             </Link>
           </div>

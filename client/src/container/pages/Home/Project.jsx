@@ -15,11 +15,12 @@ const { Title, Text } = Typography;
 function Project() {
   // const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    getProjects().then(res => {
+    getProjects(id).then(res => {
       setProjects(res.data.projects);
       // if (res.data.projects.length == 0) {
       //   navigate('/welcome');
@@ -31,9 +32,9 @@ function Project() {
 
   return (
     <div className="text-center max-w-5xl w-screen mx-auto px-6 sm:px-2 p-2">
-      <Row gutter={[24, 24]} className="mt-6 items-stretch">
+      <Row gutter={[24, 24]} className="md:mt-6 items-stretch">
         <Col span={24}>
-          <Title level={2}>My Projects</Title>
+          <h2 className="text-xl md:text-2xl">My Projects</h2>
           <div className="text-right">
             <Link to={`/home`}>
               <Button type="primary" icon={<FileAddOutlined />}>New Project</Button>
@@ -49,10 +50,10 @@ function Project() {
                 width: "100%",
                 height: "100%"
               }}
-              cover={<div className="h-[200px] bg-cover bg-no-repeat bg-blue-200" style={{ backgroundImage: proj.inputImages[0].path.includes('https://') ? `url(${proj.inputImages[0].path})` : `url(${constants.SOCKET_URL}${proj.inputImages[0].path})` }}></div>}
+              cover={<div className="h-[150px] md:h-[200px] bg-cover bg-no-repeat bg-blue-200" style={{ backgroundImage: proj.inputImages[0].path.includes('https://') ? `url(${proj.inputImages[0].path})` : `url(${constants.SOCKET_URL}${proj.inputImages[0].path})` }}></div>}
             >
               {/* <img alt="image" className=" w-auto" src={} /> */}
-              <Meta title={proj.name || "Untitled"} description={dayjs(proj.createdAt).format("MM/DD/YY hh:mm A")} />
+              <Meta title={proj.name || "Untitled"} description={<small>{dayjs(proj.createdAt).format("MM/DD/YY hh:mm A")}</small>} />
             </Card>
           </Link>
         </Col>)}

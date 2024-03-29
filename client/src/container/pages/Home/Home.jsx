@@ -8,25 +8,25 @@ import { setStorage } from "../../../helpers";
 const { Content, Sider } = Layout;
 const { Title, Text } = Typography;
 
-const categories = [
-  { src: "(1) Product Design.webp", title: "Product Design" },
-  { src: "(2) Packaging.webp", title: "Package Design" },
-  { src: "(3) Logo design.webp", title: "Logo Design" },
-  { src: "(4) Resturant Design.webp", title: "Resturant Design" },
-  { src: "(5) Home Design.webp", title: "Room Design" },
-  { src: "(6) Store Design.webp", title: "Store Design" },
-  { src: "(7) Advertisement.webp", title: "Advertisement Design" },
-  { src: "(8) App Design.webp", title: "App Design" },
-  { src: "(9) Website Design.webp", title: "Website Design" },
-  { src: "(10) Flyer Design.webp", title: "Flyer Design" },
-  { src: "(11) Business Cards.webp", title: "Business Cards" },
-  { src: "(12) Sticker Design.webp", title: "Sticker Design" },
-  { src: "(13) Album Art.webp", title: "Album Art" },
-  { src: "(14) Signage.webp", title: "Signage Design" },
-  { src: "(15) Automotive.webp", title: "Automotive Design" },
-  { src: "(16) Fashion.webp", title: "Fashion Design" },
-  { src: "(17) Furniture.webp", title: "Furniture Design" },
-  { src: "(18) Film Concept Art.webp", title: "Film Concept Art" },
+export const categories = [
+  { src: "(1) Product Design.webp", value: "Product Design" },
+  { src: "(2) Packaging.webp", value: "Package Design" },
+  { src: "(3) Logo design.webp", value: "Logo Design" },
+  { src: "(4) Resturant Design.webp", value: "Resturant Design" },
+  { src: "(5) Home Design.webp", value: "Room Design" },
+  { src: "(6) Store Design.webp", value: "Store Design" },
+  { src: "(7) Advertisement.webp", value: "Advertisement Design" },
+  { src: "(8) App Design.webp", value: "App Design" },
+  { src: "(9) Website Design.webp", value: "Website Design" },
+  { src: "(10) Flyer Design.webp", value: "Flyer Design" },
+  { src: "(11) Business Cards.webp", value: "Business Cards" },
+  { src: "(12) Sticker Design.webp", value: "Sticker Design" },
+  { src: "(13) Album Art.webp", value: "Album Art" },
+  { src: "(14) Signage.webp", value: "Signage Design" },
+  { src: "(15) Automotive.webp", value: "Automotive Design" },
+  { src: "(16) Fashion.webp", value: "Fashion Design" },
+  { src: "(17) Furniture.webp", value: "Furniture Design" },
+  { src: "(18) Film Concept Art.webp", value: "Film Concept Art" },
 ]
 
 function Home() {
@@ -47,7 +47,7 @@ function Home() {
   }, [plan]);
 
   const handleNext = (cat) => {
-    setStorage('image_type', cat.title);
+    setStorage('image_type', cat.value);
     navigate('/upload');
   }
 
@@ -62,7 +62,7 @@ function Home() {
             {categories.map((cat, index) => <Col key={index} span={8}>
               <div className="text-center hover:-m-1">
                 <img src={`/imgs/category/${cat.src}`} className="w-[80%] mx-auto bg-gray-300 cursor-pointer rounded shadow-sm hover:shadow-lg" onClick={() => handleNext(cat)}></img> <br />
-                <Text className="text-xl font-bold">{cat.title}</Text>
+                <Text className="text-xl font-bold">{cat.value}</Text>
               </div>
             </Col>)}
           </Row>
