@@ -174,9 +174,9 @@ function Result() {
   return (
     <div className="text-center max-w-5xl w-screen mx-auto p-4">
       <Row gutter={[12, 12]} className="sm:mt-6">
-        <Col span={24}>
+        {/* <Col span={24}>
           <h2 className="sm:text-xl md:text-2xl !text-shadow-lg capitalize">{concept.name}</h2>
-        </Col>
+        </Col> */}
         <Col span={24}>
           {concept.resultImages?.filter(data => data.status == "completed").length > 0 ? <h4 className="bg-purple-500 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">These images are <span className="text-black font-bold">AI Generated</span>. Use words to change them however you want.</h4> : <h4 className="sm:text-lg md:text-xl">Please wait 30 seconds while our AI Generates your starting image.</h4>}
         </Col>
