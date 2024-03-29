@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 module.exports = {
+    ASSETS_URL: process.env.ASSETS_URL,
     port: process.env.PORT || 5000,
     MongoURL: process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/landlord_db',
     SecretKey: process.env.SECRET_KEY || 'secret_landlord',

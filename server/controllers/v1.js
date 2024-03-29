@@ -4,6 +4,7 @@ const ConceptModel = require('../models/concepts');
 const { _generateImage, _getImages } = require('../utils/imagineAPI');
 const { pinterestSearch } = require('../scripts/pinSearch');
 const UserModel = require('../models/userModel');
+const config = require('../config');
 
 exports.upload = async (req, res) => {
   try {
@@ -84,7 +85,7 @@ exports.getImageDescriptions = async (req, res) => {
     req.user.projects = [...req.user.projects, concept._id];
     await req.user.save();
     // let path = inputImages[0].path.includes("https://") ? inputImages[0].path : `http://46.175.146.14:5000${inputImages[0].path}`;
-    let path = inputImages[0].path.includes("https://") ? inputImages[0].path : `http://54.173.222.178${inputImages[0].path}`;
+    let path = inputImages[0].path.includes("https://") ? inputImages[0].path : `${config.ASSETS_URL}${inputImages[0].path}`;
     getDescription(path).then(prompt => {
       concept.inputImages[0].desc = prompt;
       _generateImage(prompt).then(async data => {
