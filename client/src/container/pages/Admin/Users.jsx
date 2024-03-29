@@ -120,7 +120,7 @@ function Users() {
       dataIndex: "projects",
       key: "projects",
       render: (_, row) => {
-        console.log(_);
+        // console.log(_);
         return <Link to={`/projects/${row._id}`}><Button size="small">{_?.length || 0}/{_.reduce(
           (accumulator, item) => accumulator + item.resultImages.length,
           0,
