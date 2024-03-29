@@ -208,7 +208,7 @@ function Result() {
               <img src={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur" alt="product" />
               <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                 <div className="loader"></div>
-                <p className="mb-0 text-white mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}...` : `${data.status}...`}</p>
+                <p className="mb-0 text-white mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'in-progress' ? ` (${progress[data.imageId].progress}%)` : ' (0%)'}...` : `${data.status}...`}</p>
               </div>
             </div></Col>))}
             {data.status == 'failed' && new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
