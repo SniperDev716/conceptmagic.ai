@@ -137,6 +137,33 @@ exports.getConceptById = async (req, res) => {
         message: "Not Found!"
       })
     }
+    let resultImages = concept.resultImages;
+    new Promise(() => {
+      resultImages.map(resultImage => {
+        if (resultImage.status != 'completed' && resultImage.status != 'failed') {
+          _getImages(resultImage.imageId, req).then(async (_res) => {
+            await ConceptModel.updateOne(
+              {
+                _id: concept._id,
+                'resultImages.imageId': resultImage.imageId
+              },
+              {
+                $set: {
+                  'resultImages.$.urls': _res.upscaled_urls,
+                  'resultImages.$.status': _res.status,
+                }
+              }, { new: true });
+            let user = await UserModel.findById(req.user._id);
+            if (user.socketId) {
+              req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
+                success: true,
+              });
+            }
+            // console.log(req.user.socketId, '--=-=-=-=-=-=-=-=-=-=-=-=-');
+          });
+        }
+      });
+    });
     return res.json({
       success: true,
       concept

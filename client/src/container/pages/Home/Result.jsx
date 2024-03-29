@@ -84,7 +84,6 @@ function Result() {
     }
   }, []);
 
-
   useEffect(() => {
     if (concept?.resultImages?.length - prevConcept?.resultImages?.length == 1) {
       window.scrollTo(0, document.body.scrollHeight);
