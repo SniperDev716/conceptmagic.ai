@@ -140,7 +140,7 @@ exports.getConceptById = async (req, res) => {
     let resultImages = concept.resultImages;
     new Promise(() => {
       resultImages.map(resultImage => {
-        if (resultImage.status != 'completed' && resultImage.status != 'failed') {
+        if (resultImage.status != 'completed' &&  resultImage.status != 'failed' && resultImage.status != 'processing') {
           _getImages(resultImage.imageId, req).then(async (_res) => {
             await ConceptModel.updateOne(
               {
@@ -159,7 +159,7 @@ exports.getConceptById = async (req, res) => {
                 success: true,
               });
             }
-            // console.log(req.user.socketId, '--=-=-=-=-=-=-=-=-=-=-=-=-');
+            // console.log(req.user.socketId, '-=-=-=-=-=-=-=-=-=-=-=-=-');
           });
         }
       });
