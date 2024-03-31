@@ -138,32 +138,33 @@ exports.getConceptById = async (req, res) => {
       })
     }
     let resultImages = concept.resultImages;
-    new Promise(() => {
-      resultImages.map(resultImage => {
-        if (resultImage.status != 'completed' &&  resultImage.status != 'failed' && resultImage.status != 'processing') {
-          _getImages(resultImage.imageId, req).then(async (_res) => {
-            await ConceptModel.updateOne(
-              {
-                _id: concept._id,
-                'resultImages.imageId': resultImage.imageId
-              },
-              {
-                $set: {
-                  'resultImages.$.urls': _res.upscaled_urls,
-                  'resultImages.$.status': _res.status,
-                }
-              }, { new: true });
-            let user = await UserModel.findById(req.user._id);
-            if (user.socketId) {
-              req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
-                success: true,
-              });
-            }
-            // console.log(req.user.socketId, '-=-=-=-=-=-=-=-=-=-=-=-=-');
-          });
-        }
-      });
-    });
+    // new Promise((resolve, reject) => {
+    //   resultImages.map(resultImage => {
+    //     if (resultImage.status != 'completed' && resultImage.status != 'failed' && resultImage.status != 'processing') {
+    //       _getImages(resultImage.imageId, req).then(async (_res) => {
+    //         await ConceptModel.updateOne(
+    //           {
+    //             _id: concept._id,
+    //             'resultImages.imageId': resultImage.imageId
+    //           },
+    //           {
+    //             $set: {
+    //               'resultImages.$.urls': _res.upscaled_urls,
+    //               'resultImages.$.status': _res.status,
+    //             }
+    //           }, { new: true });
+    //         let user = await UserModel.findById(req.user._id);
+    //         if (user.socketId) {
+    //           req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
+    //             success: true,
+    //           });
+    //         }
+    //         resolve(true);
+    //         // console.log(req.user.socketId, '-=-=-=-=-=-=-=-=-=-=-=-=-');
+    //       });
+    //     }
+    //   });
+    // });
     return res.json({
       success: true,
       concept
@@ -194,7 +195,7 @@ exports.generateImage = async (req, res) => {
     let tmpId = Date.now();
     concept.resultImages = [...concept.resultImages, { imageId: tmpId, parent: imageId, addition: prevPrompt ? keywords : "", status: "processing" }];
     await concept.save();
-    new Promise(async () => {
+    new Promise(async (resolve, reject) => {
       let prompt = keywords;
       if (!isAdvanced && keywords) {
         prompt = await getPromptByKeywords(keywords, prevPrompt);
@@ -239,6 +240,7 @@ exports.generateImage = async (req, res) => {
             success: true,
           });
         }
+        resolve(true);
         // console.log(req.user.socketId, '--=-=-=-=-=-=-=-=-=-=-=-=-');
       });
     });
