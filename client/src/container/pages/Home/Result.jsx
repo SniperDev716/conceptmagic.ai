@@ -59,11 +59,11 @@ function Result() {
 
     if (socket) {
       socket.on('IMAGE_GENERATED', (data) => {
-        // console.log('IMAGE_GENERATED');
+        console.log('IMAGE_GENERATED');
         getImage();
       });
       socket.on('IMAGE_PROCESS', (data) => {
-        // console.log('IMAGE_PROCESS'/* , data.url */);
+        console.log('IMAGE_PROCESS'/* , data.url */);
         if (!progress[data.id]) {
           getImage();
         }
