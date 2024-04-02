@@ -29,10 +29,12 @@ function Project() {
 
   const [projects, setProjects] = useState([]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [actSub, setActSub] = useState({});
   const [selSub, setSelSub] = useState({});
 
   useEffect(() => {
+    setLoading(true);
     getProjects(id).then(res => {
       setProjects(res.data.projects);
       // if (res.data.projects.length == 0) {
@@ -40,6 +42,8 @@ function Project() {
       // }
     }).catch((err) => {
       console.log(err);
+    }).finally(() => {
+      setLoading(false);
     });
 
     if (plans.length === 0) {
@@ -62,6 +66,13 @@ function Project() {
             </Link>
           </div>
         </Col>
+        {loading &&
+          <Col span={24}>
+            <Spin spinning={loading} size="large" tip="Loading...">
+              <div className="p-5"></div>
+            </Spin>
+          </Col>
+        }
         {projects.map((proj, index) => <Col md={6} sm={8} xs={12} key={index}>
           <Link to={`/result/${proj._id}`}>
             <Card
@@ -78,11 +89,9 @@ function Project() {
             </Card>
           </Link>
         </Col>)}
-        <Col span={24}>
-          {/* <div className="text-center">
-            <Button type="primary" size="large" onClick={handleNext} loading={loading}>Next step</Button>
-          </div> */}
-        </Col>
+        {(!loading && projects.length == 0) && <Col span={24}>
+          <h1>No Prjects</h1>
+        </Col>}
       </Row>
       <Elements stripe={stripePromise} nonce="random-nonce">
         <PayModal

@@ -44,20 +44,12 @@ function Result() {
   const prevConcept = usePrevious(concept);
 
   useEffect(() => {
-    const getImage = () => {
-      getConceptById(id).then(res => {
-        setConcept(res.data.concept);
-        if (res.data.concept) {
-          setAdvancedValue(res.data.concept.resultImages.map((data, index) => advancedValue[index] || data.prompt));
-          setIsAdvanced(res.data.concept.resultImages.map((_, index) => isAdvanced[index] || false));
-        }
-      }).catch(err => {
-        console.log(err);
-      });
-    }
     getImage();
+  }, []);
 
+  useEffect(() => {
     if (socket) {
+      console.log('socket event added!');
       socket.on('IMAGE_GENERATED', (data) => {
         console.log('IMAGE_GENERATED');
         getImage();
@@ -78,11 +70,25 @@ function Result() {
 
     return () => {
       if (socket) {
+      console.log('socket event removed!');
         socket.off('IMAGE_GENERATED');
         socket.off('IMAGE_PROCESS');
       }
     }
-  }, []);
+  }, [socket]);
+
+
+  const getImage = () => {
+    getConceptById(id).then(res => {
+      setConcept(res.data.concept);
+      if (res.data.concept) {
+        setAdvancedValue(res.data.concept.resultImages.map((data, index) => advancedValue[index] ? advancedValue[index] : data.prompt));
+        setIsAdvanced(res.data.concept.resultImages.map((_, index) => isAdvanced[index] ? true : false));
+      }
+    }).catch(err => {
+      console.log(err);
+    });
+  }
 
   useEffect(() => {
     if (concept?.resultImages?.length - prevConcept?.resultImages?.length == 1) {
@@ -203,7 +209,7 @@ function Result() {
                 </Image.PreviewGroup>}
               </div>
             </Col>
-            {(data.status !== 'completed' && data.status !== 'failed') && (data.parent ? (concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.length > 0 ? concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
+            {(data.status !== 'completed' && data.status !== 'failed') && (data.parent ? ((concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.length > 0 && index > 11) ? concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
               <div className="relative flex justify-center items-center flex-col bg-gray-200">
                 <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId]?.url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`w-full clip_${progress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
                   filter: `blur(${progress[data.imageId]?.url ? '2px' : '23px'})`
