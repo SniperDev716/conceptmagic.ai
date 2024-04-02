@@ -8,16 +8,29 @@ import constants from "../../../config/constants";
 import { FileAddOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import PayModal from "./Partials/PayModal";
+import { getPlans } from "../../../redux/plan/planSlice";
+import { getUserSubscription } from "../../../services/planAPI";
+
 const { Meta } = Card;
 
 const { Title, Text } = Typography;
 
+const stripePromise = loadStripe(constants.stripePK);
+
 function Project() {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const plans = useSelector(state => state.plan.plans ?? []);
+
   const [projects, setProjects] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [actSub, setActSub] = useState({});
+  const [selSub, setSelSub] = useState({});
 
   useEffect(() => {
     getProjects(id).then(res => {
@@ -28,6 +41,14 @@ function Project() {
     }).catch((err) => {
       console.log(err);
     });
+
+    if (plans.length === 0) {
+      dispatch(getPlans());
+    }
+    getUserSubscription().then(res => {
+      setActSub(res.data.activeSubscription ?? {});
+      setSelSub(res.data.selectedSubscription ?? {});
+    });
   }, []);
 
   return (
@@ -37,7 +58,7 @@ function Project() {
           <h2 className="text-xl md:text-2xl">My Projects</h2>
           <div className="text-right">
             <Link to={`/home`}>
-              <Button type="primary" icon={<FileAddOutlined />}>New Project</Button>
+              <Button /* onClick={() => { setOpen(true) }} */ type="primary" icon={<FileAddOutlined />}>New Project</Button>
             </Link>
           </div>
         </Col>
@@ -63,6 +84,15 @@ function Project() {
           </div> */}
         </Col>
       </Row>
+      <Elements stripe={stripePromise} nonce="random-nonce">
+        <PayModal
+          open={open}
+          setOpen={setOpen}
+          price={plans[0]?.price}
+          planId={plans[0]?._id}
+          setSuccessful={() => { }}
+        />
+      </Elements>
     </div>
   );
 }

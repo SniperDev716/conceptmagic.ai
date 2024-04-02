@@ -146,7 +146,7 @@ function UploadContainer() {
                 setSearch(e);
               }}
             >
-              <Input.Search size="large" /* className="[&_input]:opacity-70 [&_input:hover]:opacity-100 [&_input:focus]:opacity-100" */ onSearch={() => handleSearch()} allowClear loading={pinLoading} placeholder="Search images.." />
+              <Input.Search size="large" /* className="[&_input]:opacity-70 [&_input:hover]:opacity-100 [&_input:focus]:opacity-100" */ onSearch={() => handleSearch()} loading={pinLoading} placeholder="Search images.." />
             </AutoComplete>
           </div>
           <div id="imagelistview" className="max-h-[calc(100vh_-_425px)] min-h-[350px] overflow-y-auto overflow-x-hidden border-4 border-solid border-blue-400 rounded-lg">

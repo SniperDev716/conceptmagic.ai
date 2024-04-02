@@ -32,6 +32,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       socket.current.on("disconnect", () => {
+        // window.location.reload();
         console.info(`disconnected`);
         setConnected(false);
       });
@@ -46,11 +47,11 @@ export const SocketProvider = ({ children }) => {
     }
 
     return () => {
-      if (socket.current && socket.current.connected) {
+      if (socket.current && socket.current.connected && !isAuthenticated) {
         socket.current.disconnect();
       }
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isConnected]);
 
   return (
     <SocketContext.Provider value={socket.current}>

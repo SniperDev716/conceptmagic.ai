@@ -8,52 +8,59 @@ import { logout } from '../../../redux/auth/authSlice';
 
 import avatarImage from "../../../assets/images/avatar.png";
 
-const items = [
-  // {
-  //   label: 'My projects',
-  //   key: '/projects',
-  //   icon: <FileImageOutlined />,
-  // },
-  // {
-  //   label: 'Plans',
-  //   key: '/plans',
-  //   icon: <UnorderedListOutlined />,
-  // },
-  {
-    label: 'Profile',
-    key: '/user/profile',
-    icon: <IdcardOutlined />,
-  },
-  {
-    label: 'Admin',
-    key: 'admin',
-    type: 'group',
-    icon: <SafetyOutlined />,
-    children: [
-      {
-        label: 'Users',
-        key: '/admin/users',
-        icon: <UserOutlined />,
-      },
-      // {
-      //   label: 'Analyze',
-      //   key: '/admin/analyze',
-      //   icon: <AreaChartOutlined />,
-      // },
-    ]
-  },
-  {
-    label: 'Log Out',
-    key: '/auth/logout',
-    icon: <LockOutlined />,
-  },
-];
-
 const UserMenu = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
+
+  const items = [
+    // {
+    //   label: 'My projects',
+    //   key: '/projects',
+    //   icon: <FileImageOutlined />,
+    // },
+    {
+      label: <div className=''>{user.name}<br />{user.email}</div>,
+      key: 'user',
+      type: 'group',
+      children: [
+        {
+          label: 'Profile',
+          key: '/user/profile',
+          icon: <IdcardOutlined />,
+        },
+        // {
+        //   label: 'Plans',
+        //   key: '/plans',
+        //   icon: <UnorderedListOutlined />,
+        // },
+      ]
+    },
+    {
+      label: 'Admin',
+      key: 'admin',
+      type: 'group',
+      icon: <SafetyOutlined />,
+      children: [
+        {
+          label: 'Users',
+          key: '/admin/users',
+          icon: <UserOutlined />,
+        },
+        // {
+        //   label: 'Analyze',
+        //   key: '/admin/analyze',
+        //   icon: <AreaChartOutlined />,
+        // },
+      ]
+    },
+    {
+      label: 'Log Out',
+      key: '/auth/logout',
+      icon: <LockOutlined />,
+    },
+  ];
 
   const handleClick = ({ item, key }) => {
     if (key === '/auth/logout') {

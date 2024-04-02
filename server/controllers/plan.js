@@ -73,7 +73,8 @@ exports.createSubscription = async (req, res) => {
       req.user.selectedSubscriptionId,
     ).populate('planId');
     let subscription;
-    if (actSub && selSub) {
+    let trial = { trial_period_days: 7 };
+    /* if (actSub && selSub) {
       if (actSub.planId.price < plan.price) {
         req.user.activeSubscriptionId = null;
         req.user.selectedSubscriptionId = null;
@@ -231,11 +232,12 @@ exports.createSubscription = async (req, res) => {
         req.user.selectedSubscriptionId = sub._id;
         await req.user.save();
       }
-    } else if (!actSub) {
+    } else  */if (!actSub) {
       //new save act
       // create a stripe subscription
       subscription = await stripe.subscriptions.create({
         customer: customerId,
+        ...trial,
         items: [{ price: priceId }],
         payment_settings: {
           payment_method_options: {
@@ -256,16 +258,22 @@ exports.createSubscription = async (req, res) => {
       const sub = await new Subscription({
         userId: req.user._id,
         planId: planId,
-        name: 'landlord_monthly_subscription',
+        name: 'concept_monthly_subscription',
         stripeId: subscription.id,
         stripe_price: priceId,
       }).save();
       req.user.activeSubscriptionId = sub._id;
-      req.user.plan = plan.plan;
+      // req.user.plan = plan.plan;
       await req.user.save();
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "You have already subscribed."
+      });
     }
-
+    // console.log(subscription);
     return res.json({
+      success: true,
       clientSecret: subscription?.latest_invoice?.payment_intent?.client_secret,
     });
   } catch (error) {
@@ -277,7 +285,53 @@ exports.createSubscription = async (req, res) => {
   }
 };
 
-exports.createFreeSubscriptionByAdmin = async (req, res) => {};
+exports.cancelSubscription = async (req, res) => {
+  try {
+    const actSub = await Subscription.findById(
+      req.user.activeSubscriptionId,
+    ).populate('planId');
+    const selSub = await Subscription.findById(
+      req.user.selectedSubscriptionId,
+    ).populate('planId');
+    if (selSub) {
+      req.user.selectedSubscriptionId = null;
+      await req.user.save();
+      await stripe.subscriptions.cancel(selSub.stripeId);
+    }
+
+    if (actSub) {
+
+      if (actSub.planId.price === 0) {
+        await stripe.subscriptions.del(actSub.stripeId);
+      } else {
+        await stripe.subscriptions.update(actSub.stripeId, {
+          cancel_at_period_end: true,
+        });
+      }
+
+
+      // if (req.user.utm_content) {
+      //   await User.findByIdAndUpdate(req.user.utm_content, {
+      //     $inc: {
+      //       cancelled: 1,
+      //     },
+      //   });
+      // }
+    }
+    return res.json({
+      success: true,
+      message: 'Successfully cancelled!',
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.createFreeSubscriptionByAdmin = async (req, res) => { };
 
 exports.getUserSubscription = async (req, res) => {
   try {
@@ -325,7 +379,7 @@ exports.increasePlanLimit = async (req, res) => {
   try {
     const { property, document, account, userId } = req.body;
     const user = await User.findById(userId);
-    const plan1 = await Plan.findOne({price: 0});
+    const plan1 = await Plan.findOne({ price: 0 });
     const priceId = plan1.stripe_plan;
     let customerId = user.stripeId;
     if (!customerId) {

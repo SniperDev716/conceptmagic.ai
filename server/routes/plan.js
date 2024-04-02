@@ -7,6 +7,7 @@ router.get('/', planController.getAll);
 router.get('/activePlan', planController.getActivePlan);
 router.get('/getUserSubscription', planController.getUserSubscription);
 router.post('/createSubscription', planController.createSubscription);
+router.put('/cancelSubscription', planController.cancelSubscription);
 router.post('/increasePlanLimit', isAdmin, planController.increasePlanLimit);
 
 module.exports = router;

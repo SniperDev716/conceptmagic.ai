@@ -20,16 +20,8 @@ const PlanSchema = new Schema(
       type: Number,
       default: 0,
     },
-    services: {
-      type: [String],
-    },
     description: {
       type: String,
-    },
-    plan: {
-      property: Number,
-      document: Number,
-      teamMember: Number,
     },
   },
   {

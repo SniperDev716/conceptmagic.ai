@@ -59,10 +59,37 @@ exports.getPromptByKeywords = async (desc, prev) => {
         }
       ]
     }
-    console.log(prompt);
     const completion = await openai.createChatCompletion(props);
+    console.log("[LOG]", "Prompt generated");
     return completion.data.choices[0].message.content;
   } catch (error) {
     console.log("[LOG:ERROR-getPromptByKeywords]", error);
+  }
+}
+
+exports.getIdeas = async (prompt) => {
+  try {
+    const props = {
+      model: 'gpt-4-0125-preview',
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: "system",
+          content: `You are a helpful assistant that generate creative ideas based on a topic. Provide your answer in JSON structure like this {'ideas': ['', '', ...]}`
+        },
+        {
+          role: "user",
+          content: `What are 10 creative/clever changes this text-to-image prompt including, Style changes, add/remove elements, color changes, background changes: \n ${prompt}`,
+        }
+      ]
+    }
+    const completion = await openai.createChatCompletion(props);
+    console.log("[LOG]", "Prompt generated"/* , completion.data.choices[0].message.content */);
+    const data = JSON.parse(completion.data.choices[0].message.content);
+    return data.ideas;
+    // return [];
+  } catch (error) {
+    console.log("[ERROR]:getIdeas", error.message);
+    return [];
   }
 }

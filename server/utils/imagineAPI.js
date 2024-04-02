@@ -3,6 +3,7 @@ const axios = require("axios");
 const config = require("../config");
 const { sleep } = require("./helpers");
 const UserModel = require("../models/userModel");
+const socketio = require("../scripts/socketio");
 
 const axiosClient = axios.create();
 
@@ -39,22 +40,24 @@ exports._getImages = async (imageId, req) => {
     // console.log(responseData)
     let data = responseData.data;
     while (data.status != "completed" && data.status != "failed") {
-      console.log(data.status, Date.now());
+      console.log(req.user.name, data.status, Date.now());
       response = await axiosClient.get(`${imageId}`);
       responseData = response.data;
       data = responseData.data;
       // console.log(data);
       let user = await UserModel.findById(req.user._id);
       if (user.socketId) {
-        req.app.get('io').to(user.socketId).emit("IMAGE_PROCESS", {
+        // console.log(user.socketId, 'socket_id');
+        socketio.getSocketIO().to(user.socketId).emit("IMAGE_PROCESS", {
           progress: data.progress,
           status: data.status.replace('pending', 'uploading').replace('in-progress', 'generating'),
           id: data.id,
+          url: data.url,
         });
       }
       await sleep(1);
     }
-    console.log(data.status, Date.now());
+    console.log(req.user.name, data.status, Date.now());
     return data;
   } catch (error) {
     console.error('Error', error);

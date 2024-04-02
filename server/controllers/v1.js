@@ -1,10 +1,12 @@
 const delFile = require('../utils/delFile');
-const { getDescription, getPromptByKeywords } = require("../utils/chatGPT");
+const { getDescription, getPromptByKeywords, getIdeas } = require("../utils/chatGPT");
 const ConceptModel = require('../models/concepts');
 const { _generateImage, _getImages } = require('../utils/imagineAPI');
 const { pinterestSearch } = require('../scripts/pinSearch');
 const UserModel = require('../models/userModel');
 const config = require('../config');
+const { randomUUID } = require('crypto');
+const socketio = require('../scripts/socketio');
 
 exports.upload = async (req, res) => {
   try {
@@ -86,11 +88,61 @@ exports.getImageDescriptions = async (req, res) => {
     await req.user.save();
     // let path = inputImages[0].path.includes("https://") ? inputImages[0].path : `http://46.175.146.14:5000${inputImages[0].path}`;
     let path = inputImages[0].path.includes("https://") ? inputImages[0].path : `${config.ASSETS_URL}${inputImages[0].path}`;
-    getDescription(path).then(prompt => {
+    getDescription(path).then(async prompt => {
       concept.inputImages[0].desc = prompt;
+      let ideas = await getIdeas(prompt);
       _generateImage(prompt).then(async data => {
         concept.resultImages = [{ imageId: data.id, prompt, status: data.status }];
+        ideas.forEach((idea, index) => {
+          concept.resultImages = [...concept.resultImages, { imageId: `tmp-${index}`, parent: data.id, addition: idea, status: "processing" }];
+        });
         await concept.save();
+
+        ideas.forEach((idea, index) => {
+          // let tmpId = randomUUID();
+          new Promise(async () => {
+
+            let newPrompt = await getPromptByKeywords(idea, prompt);
+
+            let _data = await _generateImage(newPrompt);
+
+            await ConceptModel.updateOne(
+              {
+                _id: concept._id,
+                'resultImages.imageId': `tmp-${index}`
+              },
+              {
+                $set: {
+                  'resultImages.$.imageId': _data.id,
+                  'resultImages.$.prompt': newPrompt,
+                  'resultImages.$.status': _data.status,
+                }
+              }, { new: true });
+            _getImages(_data.id, req).then(async (_res) => {
+              await ConceptModel.updateOne(
+                {
+                  _id: concept._id,
+                  'resultImages.imageId': _data.id
+                },
+                {
+                  $set: {
+                    'resultImages.$.urls': _res.upscaled_urls,
+                    'resultImages.$.status': _res.status,
+                  }
+                }, { new: true });
+              let user = await UserModel.findById(req.user._id);
+              if (user.socketId) {
+                socketio.getSocketIO().to(user.socketId).emit('IMAGE_GENERATED', {
+                success: true,
+              });
+              }
+            });
+          });
+        });
+        // for (const idea of ideas) {
+
+        // }
+
         _getImages(data.id, req).then(async (_res) => {
           await ConceptModel.updateOne(
             {
@@ -105,9 +157,9 @@ exports.getImageDescriptions = async (req, res) => {
             }, { new: true });
           let user = await UserModel.findById(req.user._id);
           if (user.socketId) {
-            req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
-              success: true,
-            });
+           socketio.getSocketIO().to(user.socketId).emit('IMAGE_GENERATED', {
+            success: true,
+          });
           }
         });
       });
@@ -192,7 +244,7 @@ exports.generateImage = async (req, res) => {
       prevPrompt = img[0].prompt;
     }
     // new Promise()
-    let tmpId = Date.now();
+    let tmpId = randomUUID();
     concept.resultImages = [...concept.resultImages, { imageId: tmpId, parent: imageId, addition: prevPrompt ? keywords : "", status: "processing" }];
     await concept.save();
     new Promise(async (resolve, reject) => {
@@ -236,9 +288,9 @@ exports.generateImage = async (req, res) => {
           }, { new: true });
         let user = await UserModel.findById(req.user._id);
         if (user.socketId) {
-          req.app.get('io').to(user.socketId).emit('IMAGE_GENERATED', {
-            success: true,
-          });
+          socketio.getSocketIO().to(user.socketId).emit('IMAGE_GENERATED', {
+          success: true,
+        });
         }
         resolve(true);
         // console.log(req.user.socketId, '--=-=-=-=-=-=-=-=-=-=-=-=-');

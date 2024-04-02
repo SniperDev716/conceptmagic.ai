@@ -45,7 +45,7 @@ function Lists() {
           </Title>
         </Col>
         {plans.map(({
-          _id, name, slug, description, price, services
+          _id, name, slug, description, price
         }) => (
           <Col span={22} md={12} lg={6}  key={_id} className='!p-2 price-card'>
             <Card className='shadow-lg w-full h-full'>
@@ -58,12 +58,12 @@ function Lists() {
                 </div>
                 <Divider />
                 {price > 0 && <Title level={3}>${price}<Text type='secondary'>/month</Text></Title>}
-                {price == 0 && <Title level={3}>Free</Title>}
+                {/* {price == 0 && <Title level={3}>Free</Title>}
                 {services.map((service, index) => (
                   <div className='my-2' key={index}>
                     <CheckCircleTwoTone /> <span className='text-lg'>{service}</span>
                   </div>
-                ))}
+                ))} */}
                 <div className="mt-4 text-center">
                   {actSub?.planId?._id == _id && <div>
                     <span className='text-[15px] cursor-default'>Current Plan</span> <br />
