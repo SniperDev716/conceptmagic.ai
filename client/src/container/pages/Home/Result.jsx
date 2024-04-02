@@ -205,7 +205,9 @@ function Result() {
             </Col>
             {(data.status !== 'completed' && data.status !== 'failed') && (data.parent ? (concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.length > 0 ? concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
               <div className="relative flex justify-center items-center flex-col bg-gray-200">
-                <div className="relative"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId]?.url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`w-full blur-[1px] blur${progress[data.imageId]?.url ? '-[1px]' : ''} clip_${progress[data.imageId]?.url ? index1 : ''}`} alt="product" /></div>
+                <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId]?.url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`w-full clip_${progress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
+                  filter: `blur(${progress[data.imageId]?.url ? '2px' : '23px'})`
+                }} /></div>
                 <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                   <div className="loader"></div>
                   <p className="mb-0 text-white mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
@@ -213,14 +215,18 @@ function Result() {
               </div>
             </Col>) : new Array(4).fill(concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`).map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
               <div className="relative flex justify-center items-center flex-col bg-gray-200">
-                <div className="relative"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId]?.url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`w-full blur${progress[data.imageId]?.url ? '-[1px]' : ''} clip_${progress[data.imageId]?.url ? index1 : ''}`} alt="product" /></div>
+                <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId]?.url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`w-full clip_${progress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
+                  filter: `blur(${progress[data.imageId]?.url ? '2px' : '23px'})`
+                }} /></div>
                 <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                   <div className="loader"></div>
                   <p className="mb-0 text-white mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
                 </div>
               </div>
             </Col>)) : new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200 relative">
-              <div className="relative"><Image src={`${progress[data.imageId]?.url || (concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`)}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`w-full blur${progress[data.imageId]?.url ? '-[1px]' : ''} clip_${progress[data.imageId]?.url ? index1 : ''}`} alt="product" /></div>
+              <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url || (concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`)}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`w-full clip_${progress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
+                filter: `blur(${progress[data.imageId]?.url ? '2px' : '23px'})`
+              }} /></div>
               <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                 <div className="loader"></div>
                 <p className="mb-0 text-white mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
@@ -288,7 +294,7 @@ function Result() {
           {concept.resultImages?.length == 1 && new Array(10).fill(0).map((_, index) => {
             return (<Row gutter={[24, 24]} key={index}>
               {new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200 relative">
-                <img src={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur" alt="product" />
+                <img src={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur-xl" alt="product" />
                 <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                   <div className="loader"></div>
                   <p className="mb-0 text-white mt-2">processing...</p>

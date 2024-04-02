@@ -11,10 +11,14 @@ const webhook = require('./controllers/webhook');
 const api = require('./routes');
 const request = require('request');
 const sharp = require('sharp');
+const UserModel = require('./models/userModel');
 
 mongoose
   .connect(config.MongoURL)
-  .then(() => console.log('MONGODB connected!'))
+  .then(async () => {
+    await UserModel.updateMany({}, { $set: { socketId: [] } });
+    console.log('MONGODB connected!');
+  })
   .catch(console.log);
 
 const app = express();

@@ -45,16 +45,16 @@ exports._getImages = async (imageId, req) => {
       responseData = response.data;
       data = responseData.data;
       // console.log(data);
-      let user = await UserModel.findById(req.user._id);
-      if (user.socketId) {
-        // console.log(user.socketId, 'socket_id');
-        socketio.getSocketIO().to(user.socketId).emit("IMAGE_PROCESS", {
-          progress: data.progress,
-          status: data.status.replace('pending', 'uploading').replace('in-progress', 'generating'),
-          id: data.id,
-          url: data.url,
-        });
-      }
+      // let user = await UserModel.findById(req.user._id);
+      // if (user.socketId) {
+      // console.log(user.socketId, 'socket_id');
+      socketio.getSocketIO().to(req.user._id.toString()).emit("IMAGE_PROCESS", {
+        progress: data.progress,
+        status: data.status.replace('pending', 'uploading').replace('in-progress', 'generating'),
+        id: data.id,
+        url: data.url,
+      });
+      // }
       await sleep(1);
     }
     console.log(req.user.name, data.status, Date.now());

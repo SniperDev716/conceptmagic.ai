@@ -24,7 +24,7 @@ const UserSchema = new Schema(
       default: 2,
     },
     socketId: {
-      type: String,
+      type: [String],
     },
     utm_source: {
       type: String,

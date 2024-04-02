@@ -130,12 +130,9 @@ exports.getImageDescriptions = async (req, res) => {
                     'resultImages.$.status': _res.status,
                   }
                 }, { new: true });
-              let user = await UserModel.findById(req.user._id);
-              if (user.socketId) {
-                socketio.getSocketIO().to(user.socketId).emit('IMAGE_GENERATED', {
+              socketio.getSocketIO().to(req.user._id.toString()).emit('IMAGE_GENERATED', {
                 success: true,
               });
-              }
             });
           });
         });
@@ -155,12 +152,9 @@ exports.getImageDescriptions = async (req, res) => {
                 'resultImages.$.status': _res.status,
               }
             }, { new: true });
-          let user = await UserModel.findById(req.user._id);
-          if (user.socketId) {
-           socketio.getSocketIO().to(user.socketId).emit('IMAGE_GENERATED', {
+          socketio.getSocketIO().to(req.user._id.toString()).emit('IMAGE_GENERATED', {
             success: true,
           });
-          }
         });
       });
     });
@@ -286,12 +280,10 @@ exports.generateImage = async (req, res) => {
               'resultImages.$.status': _res.status,
             }
           }, { new: true });
-        let user = await UserModel.findById(req.user._id);
-        if (user.socketId) {
-          socketio.getSocketIO().to(user.socketId).emit('IMAGE_GENERATED', {
+
+        socketio.getSocketIO().to(req.user._id.toString()).emit('IMAGE_GENERATED', {
           success: true,
         });
-        }
         resolve(true);
         // console.log(req.user.socketId, '--=-=-=-=-=-=-=-=-=-=-=-=-');
       });

@@ -17,7 +17,7 @@ module.exports = {
               jwt.verify(socket.handshake.query.token.replace('jwt ', ''), SecretKey, async function(err, decoded) {
                 if (err) return next(new Error('Authentication error'));
                 socket.user = decoded;
-                await User.findByIdAndUpdate(decoded.id, { $set: { socketId: socket.id } }, { new: true});
+                await User.findByIdAndUpdate(decoded.id, { $push: { socketId: socket.id } }, { new: true});
                 next();
               });
             }
@@ -25,11 +25,11 @@ module.exports = {
               next(new Error('Authentication error'));
             }    
           }).on('connection', (socket) => {
-            console.log(`socket ${socket.id} connected`);
-            socket.join(socket.user.id);
+            console.log(`${socket.user.id} socket ${socket.id} connected`);
+            socket.join(socket.user.id.toString());
             socket.on(`disconnect`, async (reason) => {
-                socket.leave(socket.user.id);
-                await User.findByIdAndUpdate(socket.user.id, { $set: { socketId: null } }, { new: true});
+                socket.leave(socket.user.id.toString());
+                await User.findByIdAndUpdate(socket.user.id, { $pull: { socketId: socket.id } }, { new: true});
                 console.log(
                     `socket ${socket.id} disconnected due to ${reason}`,
                 );

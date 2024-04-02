@@ -75,7 +75,7 @@ exports.getIdeas = async (prompt) => {
       messages: [
         {
           role: "system",
-          content: `You are a helpful assistant that generate creative ideas based on a topic. Provide your answer in JSON structure like this {'ideas': ['', '', ...]}`
+          content: `You are a helpful and creative focused GPT-4 assistant designed to come up with clever and creative ideas to change an existing image into a new concept. The goal is to showcase different creative ideas and unique concepts for image prompts that will be used in a text-to-image generator. Provide your answer in JSON structure like this {'ideas': ['', '', ...]}`
         },
         {
           role: "user",

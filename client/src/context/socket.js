@@ -19,7 +19,8 @@ export const SocketProvider = ({ children }) => {
   const socket = useRef(null);
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
   useEffect(() => {
-    if (isAuthenticated && !isConnected) {
+    // console.log(isAuthenticated, isConnected);
+    if (!isConnected) {
       socket.current = io(constants.SOCKET_URL, {
         query: {
           token: getStorage("token"),
@@ -47,11 +48,11 @@ export const SocketProvider = ({ children }) => {
     }
 
     return () => {
-      if (socket.current && socket.current.connected && !isAuthenticated) {
+      if (socket.current && socket.current.connected) {
         socket.current.disconnect();
       }
     };
-  }, [isAuthenticated, isConnected]);
+  }, []);
 
   return (
     <SocketContext.Provider value={socket.current}>
