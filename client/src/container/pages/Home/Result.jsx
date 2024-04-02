@@ -215,7 +215,7 @@ function Result() {
                   filter: `blur(${progress[data.imageId]?.url ? '2px' : '23px'})`
                 }} /></div>
                 <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
-                  <div className="loader"></div>
+                  <span className="loader"></span>
                   <p className="mb-0 text-white mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
                 </div>
               </div>
