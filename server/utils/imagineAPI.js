@@ -21,10 +21,10 @@ axiosClient.defaults.headers = {
 // we wrap it in a main function here so we can use async/await inside of it.
 exports._generateImage = async (prompt = "Something went wrong!") => {
   try {
-    console.log("[LOG]:Prompt", prompt);
+    console.log("[LOG]", '...Generating...');
     const response = await axiosClient.post('/', { prompt });
     const responseData = response.data;
-    console.log(responseData);
+    // console.log(responseData);
     return responseData.data;
   } catch (error) {
     console.error('Error generating image:', error);

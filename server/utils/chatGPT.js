@@ -8,6 +8,7 @@ const openai = new OpenAIApi(configuration);
 
 exports.getDescription = async (image_url) => {
   try {
+    console.log("...Starting...");
     const props = {
       model: 'gpt-4-vision-preview',
       messages: [
