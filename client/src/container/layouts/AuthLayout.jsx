@@ -2,17 +2,19 @@ import React from "react";
 import { Button, Layout } from "antd";
 import { Link } from "react-router-dom";
 
+import { FileAddOutlined, PlusOutlined } from "@ant-design/icons";
+import ScrollToTop from "react-scroll-to-top";
+
 import LogoSrc from "../../assets/images/logo.png";
 import smLogoSrc from "../../assets/images/logo-sm.png";
 import UserMenu from "./partials/UserMenu";
-import { FileAddOutlined, PlusOutlined } from "@ant-design/icons";
 
 const { Header } = Layout;
 
 function AuthLayout({ children }) {
   return (
     <Layout className="min-h-screen">
-      <Header className="bg-white flex items-center justify-between px-[20px] shadow">
+      <Header className="bg-white flex items-center justify-between px-[20px] shadow sticky top-0 z-[9999]">
         <div className="demo-logo h-[64px] bg-white mb-2">
           <Link to="/" className="hidden sm:inline">
             <img src={LogoSrc} alt="logo" className="w-[64px] p-3" />
@@ -36,6 +38,7 @@ function AuthLayout({ children }) {
         </div>
       </Header>
       <Layout>{children}</Layout>
+      <ScrollToTop smooth className="animate-bounce" />
     </Layout>
   );
 }

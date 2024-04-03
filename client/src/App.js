@@ -31,12 +31,7 @@ const App = () => {
             <Suspense
               fallback={
                 <div className="w-screen h-screen flex items-center justify-center bg-[#0000]">
-                  <HashLoader
-                    color="#273E52"
-                    loading
-                    size={80}
-                    speedMultiplier={1}
-                  />
+                  <span className="loader1"></span>
                 </div>
               }
             >
