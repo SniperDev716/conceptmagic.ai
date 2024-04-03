@@ -183,7 +183,7 @@ exports.getConceptById = async (req, res) => {
         message: "Not Found!"
       })
     }
-    let resultImages = concept.resultImages;
+    // let resultImages = concept.resultImages;
     // new Promise((resolve, reject) => {
     //   resultImages.map(resultImage => {
     //     if (resultImage.status != 'completed' && resultImage.status != 'failed' && resultImage.status != 'processing') {
@@ -211,9 +211,42 @@ exports.getConceptById = async (req, res) => {
     //     }
     //   });
     // });
+    let result = await ConceptModel.aggregate([
+      {
+        $match: {
+          'resultImages.status': { $in: ['pending', 'processing', 'in-progress'] },
+          'createdAt': { $lt: concept.createdAt }
+        }
+      },
+      {
+        $project: {
+          resultImages: {
+            $filter: {
+              input: '$resultImages',
+              as: 'resultImage',
+              cond: { $in: ['$$resultImage.status', ['pending', 'processing', 'in-progress']] }
+            }
+          }
+        }
+      },
+      { $unwind: '$resultImages' },
+      {
+        $match: {
+          'resultImages.status': { $in: ['pending', 'processing', 'in-progress'] }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    // console.log(result[0].count);
     return res.json({
       success: true,
-      concept
+      concept,
+      count: result[0].count
     })
   } catch (error) {
     console.log("[LOG:ERROR] getConceptById", error);

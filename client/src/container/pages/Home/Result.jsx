@@ -34,6 +34,7 @@ function Result() {
 
   const [isAdvanced, setIsAdvanced] = useState([]);
   const [concept, setConcept] = useState({});
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(-1);
   const [keywords, setKeywords] = useState([]);
   const [prevIndex, setPrevIndex] = useState({});
@@ -57,7 +58,7 @@ function Result() {
       });
       socket.on('IMAGE_PROCESS', (data) => {
         console.log('IMAGE_PROCESS'/* , data.url */);
-        if (!progress[data.id]) {
+        if (!progress[data.id] || prevProgress[data.id].status !== progress[data.id].status) {
           getImage();
         }
         setProgress(prev => ({
@@ -82,6 +83,7 @@ function Result() {
   const getImage = () => {
     getConceptById(id).then(res => {
       setConcept(res.data.concept);
+      setCount(res.data.count);
       if (res.data.concept) {
         setAdvancedValue((prev) => res.data.concept.resultImages.map((data, index) => prev[index] ? prev[index] : data.prompt));
         setIsAdvanced((prev) => {
@@ -190,7 +192,7 @@ function Result() {
           <h2 className="sm:text-xl md:text-2xl !text-shadow-lg capitalize">{concept.name}</h2>
         </Col> */}
         <Col span={24}>
-          {concept.resultImages?.filter(data => (data.status != "completed" && data.status != "faild")).length == 0 ? <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">These images are <span className="text-black font-bold">AI Generated</span>. Use words to change them however you want.</h4> : <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">You are <span className="text-black font-bold">8th</span> in line for the <span className="text-black font-bold">Free Tier</span>. Please wait 3 minutes or <span className="text-purple-800 font-bold">Upgrade to PRO</span>.</h4>}
+          {concept.resultImages?.filter(data => (data.status == "completed" || data.status == "faild")).length > 0 ? <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">These images are <span className="text-black font-bold">AI Generated</span>. Use words to change them however you want.</h4> : <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">You are <span className="text-black font-bold">{count < 8 ? 8 : count}th</span> in line for the <span className="text-black font-bold">Free Tier</span>. Please wait 3 minutes or <span className="text-purple-800 font-bold">Upgrade to PRO</span>.</h4>}
         </Col>
         {/* <Col span={24}>
           <div className="border-1 border-solid border-gray-300 bg-gray-100 py-2 px-4 text-left">
@@ -299,12 +301,12 @@ function Result() {
                   }}>{isAdvanced[index] ? "Basic Mode" : "Advanced"}</Button>
               </div>
               <div className="text-center mb-4">
-                <Button type="primary" size="" onClick={() => handleGenerate(data.imageId, index)} loading={loading == index}>Generate</Button>
+                <Button disabled={(data.status != 'completed' && data.status != 'failed') || loading == index} type="primary" size="" onClick={() => handleGenerate(data.imageId, index)} loading={loading == index}>Generate</Button>
               </div>
               <Divider />
             </Col>
             {index == 0 && <Col span={24}>
-              <div className="bg-black text-white p-2">We've automatically created 10 versions of your initial image to show you what is possible. Read the text in purple to see the changes we told the AI to make for each version.</div>
+              <div className="bg-black text-white p-2 mb-4 rounded">We've automatically created 10 versions of your initial image to show you what is possible. Read the text in purple to see the changes we told the AI to make for each version.</div>
             </Col>}
           </Row>)}
           {concept.resultImages?.length == 1 && new Array(10).fill(0).map((_, index) => {
