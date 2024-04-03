@@ -246,7 +246,7 @@ exports.getConceptById = async (req, res) => {
     return res.json({
       success: true,
       concept,
-      count: result[0].count
+      count: result[0]?.count || 0
     })
   } catch (error) {
     console.log("[LOG:ERROR] getConceptById", error);
