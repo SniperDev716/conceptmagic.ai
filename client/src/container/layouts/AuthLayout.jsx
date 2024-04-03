@@ -14,7 +14,7 @@ const { Header } = Layout;
 function AuthLayout({ children }) {
   return (
     <Layout className="min-h-screen">
-      <Header className="bg-white flex items-center justify-between px-[20px] shadow sticky top-0 z-[9999]">
+      <Header className="bg-white flex items-center justify-between px-[20px] shadow sticky top-0 z-[999]">
         <div className="demo-logo h-[64px] bg-white mb-2">
           <Link to="/" className="hidden sm:inline">
             <img src={LogoSrc} alt="logo" className="w-[64px] p-3" />
