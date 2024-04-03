@@ -50,7 +50,7 @@ exports.getPromptByKeywords = async (desc, prev, i = 0) => {
       `;
     }
     const props = {
-      model: 'gpt-4-vision-preview',
+      model: 'gpt-4-0125-preview',
       messages: [
         {
           role: "user",
@@ -65,7 +65,11 @@ exports.getPromptByKeywords = async (desc, prev, i = 0) => {
     return completion.data.choices[0].message.content;
   } catch (error) {
     console.log("[LOG:ERROR-getPromptByKeywords]", error);
-    return "Error";
+    await sleep(1);
+    if (i < 2) {
+      return this.getPromptByKeywords(desc, prev, i + 1);
+    }
+    return "Sorry! Something went wrong.";
   }
 }
 
@@ -94,7 +98,7 @@ exports.getIdeas = async (prompt, i = 0) => {
     console.log("[ERROR]:getIdeas", error.message);
     await sleep(1);
     if (i < 2) {
-      this.getIdeas(prompt, i + 1);
+      return this.getIdeas(prompt, i + 1);
     } else {
       return [];
     }

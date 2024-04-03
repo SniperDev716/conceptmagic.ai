@@ -19,11 +19,10 @@ axiosClient.defaults.headers = {
 // };
 
 // we wrap it in a main function here so we can use async/await inside of it.
-exports._generateImage = async (prompt) => {
+exports._generateImage = async (prompt = "Something went wrong!") => {
   try {
     console.log("[LOG]:Prompt", prompt);
     const response = await axiosClient.post('/', { prompt });
-
     const responseData = response.data;
     console.log(responseData);
     return responseData.data;
