@@ -1,5 +1,6 @@
 const { Configuration, OpenAIApi } = require('openai');
 const config = require('../config');
+const { sleep } = require('./helpers');
 
 const configuration = new Configuration({ apiKey: config.OPENAI_API_KEY });
 
@@ -38,7 +39,7 @@ exports.getDescription = async (image_url) => {
   }
 }
 
-exports.getPromptByKeywords = async (desc, prev) => {
+exports.getPromptByKeywords = async (desc, prev, i = 0) => {
   try {
     let prompt = `Turn these descriptions into a cohesive sentence: \n
     ${desc}
@@ -64,10 +65,11 @@ exports.getPromptByKeywords = async (desc, prev) => {
     return completion.data.choices[0].message.content;
   } catch (error) {
     console.log("[LOG:ERROR-getPromptByKeywords]", error);
+    return "Error";
   }
 }
 
-exports.getIdeas = async (prompt) => {
+exports.getIdeas = async (prompt, i = 0) => {
   try {
     const props = {
       model: 'gpt-4-0125-preview',
@@ -90,6 +92,11 @@ exports.getIdeas = async (prompt) => {
     // return [];
   } catch (error) {
     console.log("[ERROR]:getIdeas", error.message);
-    return [];
+    await sleep(1);
+    if (i < 2) {
+      this.getIdeas(prompt, i + 1);
+    } else {
+      return [];
+    }
   }
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { AutoComplete, Button, Col, Divider, Image, Input, Layout, Row, Skeleton, Spin, Typography, Upload, message } from "antd";
-import { FileImageOutlined, SelectOutlined, UploadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, FileImageOutlined, SelectOutlined, UploadOutlined } from "@ant-design/icons";
 import Gallery from "react-photo-gallery";
 import InfiniteScroll from "react-infinite-scroll-component";
 import $ from "jquery";
@@ -94,13 +94,15 @@ function UploadContainer() {
     }
     setFileLists(info.fileList.length == 1 ? info.fileList : info.fileList.splice(1, 1));
     setSelected(-1);
+    // console.log(info);
   };
 
   const handleDelete = (file) => {
+    setFileLists([]);
     deleteFile({
       path: file.response?.path,
     }).then((res) => {
-      console.log(res);
+      // console.log(res);
     }).catch((err) => {
       console.log(err);
     });
@@ -129,26 +131,59 @@ function UploadContainer() {
     <div className="text-center max-w-5xl w-screen mx-auto px-6 md:px-2 p-2">
       <Row gutter={[24, 24]} className="mt-6">
         <Col span={24}>
+          <div className="flex items-center">
+            <div className="flex-1">
+              <AutoComplete
+                style={{
+                  width: "100%",
+                }}
+                options={categories}
+                filterOption={(inputValue, option) =>
+                  option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                }
+                value={search}
+                onChange={(e) => {
+                  setSearch(e);
+                }}
+              >
+                <Input.Search size="large" /* className="[&_input]:opacity-70 [&_input:hover]:opacity-100 [&_input:focus]:opacity-100" */ onSearch={() => handleSearch()} loading={pinLoading} placeholder="Search images.." />
+              </AutoComplete>
+            </div>
+            <div className="mx-5"><span className="text-gray-500 text-lg">or</span></div>
+            <div className="">
+              <Upload
+                name="file"
+                multiple={false}
+                fileList={fileLists}
+                action={`${constants.HOST_URL}v1/upload`}
+                showUploadList={false}
+                listType="picture"
+                accept="image/*"
+                headers={{
+                  Authorization: getStorage("token"),
+                }}
+                data={{
+                  oldFile: path,
+                }}
+                onChange={handleChange}
+                onRemove={handleDelete}>
+                <Button className="" block size="large" icon={<UploadOutlined />}>Upload Image</Button>
+              </Upload>
+            </div>
+          </div>
+          <div className="mt-4">
+            {fileLists.length > 0 && <div className="relative w-fit mx-auto">
+              <Image src={fileLists[0].thumbUrl} className="max-h-80" />
+              <div className="absolute top-4 right-4">
+                <Button type="primary" shape="circle" icon={<DeleteOutlined />} danger onClick={() => handleDelete(fileLists[0])}></Button>
+              </div>
+            </div>}
+          </div>
+        </Col>
+        <Col span={24}>
           <Title level={3}>Select an image that you'd like to use as a starting point.</Title>
         </Col>
-        <Col span={24} className="">
-          <div className="w-full mb-2">
-            <AutoComplete
-              style={{
-                width: "100%",
-              }}
-              options={categories}
-              filterOption={(inputValue, option) =>
-                option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-              }
-              value={search}
-              onChange={(e) => {
-                setSearch(e);
-              }}
-            >
-              <Input.Search size="large" /* className="[&_input]:opacity-70 [&_input:hover]:opacity-100 [&_input:focus]:opacity-100" */ onSearch={() => handleSearch()} loading={pinLoading} placeholder="Search images.." />
-            </AutoComplete>
-          </div>
+        <Col span={24}>
           <div id="imagelistview" className="max-h-[calc(100vh_-_425px)] min-h-[350px] overflow-y-auto overflow-x-hidden border-4 border-solid border-blue-400 rounded-lg">
             {/* <Row gutter={[32, 32]}>
               {pinImages.map((image, index) => <Col span={6}>
@@ -226,27 +261,6 @@ function UploadContainer() {
               />}
             </InfiniteScroll>
           </div>
-        </Col>
-        <Divider className="!m-0">Or</Divider>
-        <Col span={24}>
-          <Upload
-            name="file"
-            multiple={false}
-            fileList={fileLists}
-            action={`${constants.HOST_URL}v1/upload`}
-            showUploadList={true}
-            listType="picture"
-            accept="image/*"
-            headers={{
-              Authorization: getStorage("token"),
-            }}
-            data={{
-              oldFile: path,
-            }}
-            onChange={handleChange}
-            onRemove={handleDelete}>
-            <Button className="" size="large" icon={<UploadOutlined />}>Choose from your computer</Button>
-          </Upload>
         </Col>
         <Col span={24}>
           <Input
