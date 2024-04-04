@@ -1,6 +1,8 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import classNames from "classnames";
+
 import { Alert, Button, Col, Divider, Image, Input, Layout, Row, Spin, Tag, Typography, Upload } from "antd";
 import { CloseCircleTwoTone, FileImageOutlined, FormOutlined } from "@ant-design/icons";
 import { WithContext as ReactTags } from 'react-tag-input';
@@ -29,8 +31,8 @@ function Result() {
   // const navigate = useNavigate();
   // const plan = useSelector((state) => state.auth.plan);
   const socket = useSocket();
-
   const { id } = useParams();
+  const isDarkMode = useSelector(state => state.app.isDarkMode);
 
   const [isAdvanced, setIsAdvanced] = useState([]);
   const [concept, setConcept] = useState({});
@@ -186,7 +188,7 @@ function Result() {
 
 
   return (
-    <div className="text-center max-w-5xl w-screen mx-auto p-4">
+    <div className="text-center max-w-7xl w-screen mx-auto p-4">
       <Row gutter={[12, 12]} className="sm:mt-6">
         {/* <Col span={24}>
           <h2 className="sm:text-xl md:text-2xl !text-shadow-lg capitalize">{concept.name}</h2>
@@ -200,11 +202,11 @@ function Result() {
             {keywords.map((keyword, index) => <Tag className="my-1 relative group/item" key={index}>{keyword} <span className="absolute -top-2 -right-2 cursor-pointer group-hover/item:inline hidden" onClick={() => { handleRemove(index) }}><CloseCircleTwoTone twoToneColor="#F00" /></span></Tag>)}
           </div>
         </Col> */}
-        <div className="bg-white p-4 rounded shadow-none mb-4 w-full">
+        <div className={classNames("p-4 rounded shadow-none mb-4 w-full", isDarkMode ? "bg-gray-800" : "bg-white")}>
           {(!concept.resultImages) && <div className="w-full h-44 bg-center bg-no-repeat bg-[length:400px_300px]" style={{ backgroundImage: `url(${loadingGif})`, backgroundColor: "#E9E9EB" }}><br /><br /><br /><br /><br /><br /><br /><br />Loading...</div>}
           {concept.resultImages?.map((data, index) => <Row gutter={[24, 24]} key={index}>
             {data.addition && <Col span={24} className="">
-              <p className="mb-0 text-left p-2 border-l-4 border-0 border-solid border-l-gray-500 bg-gray-100 text-gray-700 rounded-r-full">{data.addition}</p>
+              <p className={classNames("mb-0 text-left p-2 border-l-4 border-0 border-solid rounded-r-full", isDarkMode ? "border-l-gray-300 bg-gray-700 text-gray-300" : "border-l-gray-500 bg-gray-100 text-gray-700")}>{data.addition}</p>
             </Col>}
             <Col span={24}>
               <div>
@@ -306,7 +308,7 @@ function Result() {
               <Divider />
             </Col>
             {index == 0 && <Col span={24}>
-              <div className="bg-black text-white p-2 mb-4 rounded">We've automatically created 10 versions of your initial image to show you what is possible. Read the text in purple to see the changes we told the AI to make for each version.</div>
+              <div className="bg-black text-white p-2 mb-4 rounded text-lg">We've automatically created 10 versions of your initial image to show you what is possible. Read the text in purple to see the changes we told the AI to make for each version.</div>
             </Col>}
           </Row>)}
           {concept.resultImages?.length == 1 && new Array(10).fill(0).map((_, index) => {

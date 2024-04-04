@@ -1,23 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setStorage } from "../../helpers";
+import { getStorage, setStorage } from "../../helpers";
 
 const initialState = {
-    selectedSource: "",
+    isDarkMode: getStorage('theme') == 'dark',
 };
 
 const appSlice = createSlice({
     name: "app",
     initialState,
     reducers: {
-        setSelectedSource(state, action) {
-            if(action.payload.sourceId && action.payload.sourceId !== 'loading') {
-                setStorage('latestKey', action.payload.sourceId);
-                state.selectedSource = action.payload.sourceId;
-            }
+        setDarkMode(state, action) {
+            state.isDarkMode = !state.isDarkMode;
+            setStorage('theme', state.isDarkMode ? 'dark' : 'light');
         },
     },
 });
 
-export const { setSelectedSource } = appSlice.actions;
+export const { setDarkMode } = appSlice.actions;
 
 export default appSlice.reducer;

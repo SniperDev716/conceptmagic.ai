@@ -121,7 +121,7 @@ function Description() {
 
 
   return (
-    <div className="text-center max-w-5xl w-screen mx-auto p-2">
+    <div className="text-center max-w-7xl w-screen mx-auto p-2">
       <Row gutter={[32, 32]} className="mt-6">
         <Col span={24}>
           <Title level={2}>Click to <span className="bg-green-200 relative">select<span className="text-lg absolute top-[-15px] right-[-15px]"><CloseCircleTwoTone twoToneColor="red" /></span></span> the keywords that best describe what you want to create.</Title>

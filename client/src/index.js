@@ -1,17 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+
 import "./index.css";
 import "antd/dist/reset.css";
 import reportWebVitals from "./reportWebVitals";
-import { Worker } from "@react-pdf-viewer/core";
+// import { Worker } from "@react-pdf-viewer/core";
 import App from "./App";
+import store from "./redux/store";
+
+const storeProvider = store();
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-        <App />
-    </Worker>
+    {/* <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js"> */}
+    <Provider store={storeProvider}>
+      <App />
+    </Provider>
+    {/* </Worker> */}
   </React.StrictMode>
 );
 

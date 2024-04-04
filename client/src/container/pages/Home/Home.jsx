@@ -55,10 +55,10 @@ function Home() {
   }
 
   return (
-    <Content className="text-center max-w-5xl mx-auto p-2 my-5">
+    <Content className="text-center max-w-7xl mx-auto p-2 my-5">
       <Row>
         <Col span={24}>
-          <h3 className="text-lg sm:text-xl md:text-2xl">Pick a Category to Explore Your Creativity</h3>
+          <h3 className="text-lg sm:text-xl md:text-2xl mb-6">Pick a Category to Explore Your Creativity</h3>
         </Col>
         <Col span={24}>
           <Row gutter={[24, 24]}>

@@ -36,7 +36,7 @@ function Photos() {
   // }, [plan]);
 
   return (
-    <Content className="text-center max-w-5xl mx-auto p-2">
+    <Content className="text-center max-w-7xl mx-auto p-2">
       <Row>
         <Col span={24}>
           <div className="p-5 mb-4 bg-gray-200 border-1 border-gray-400 border-solid">

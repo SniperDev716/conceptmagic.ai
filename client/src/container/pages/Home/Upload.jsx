@@ -128,7 +128,7 @@ function UploadContainer() {
   }
 
   return (
-    <div className="text-center max-w-5xl w-screen mx-auto px-6 md:px-2 p-2">
+    <div className="text-center max-w-7xl w-screen mx-auto px-6 md:px-2 p-2">
       <Row gutter={[24, 24]} className="mt-6">
         <Col span={24}>
           <div className="flex items-center">

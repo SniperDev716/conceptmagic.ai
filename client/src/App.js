@@ -5,12 +5,13 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { Provider } from "react-redux";
-import HashLoader from "react-spinners/HashLoader";
-import { ConfigProvider, message } from "antd";
+import { useSelector } from "react-redux";
+import classNames from "classnames";
+// import HashLoader from "react-spinners/HashLoader";
+import { ConfigProvider, theme } from "antd";
+import { HappyProvider } from '@ant-design/happy-work-theme';
 
 import "./App.css";
-import store from "./redux/store";
 import PublicRoute from "./container/routes/PublicRoute";
 import PrivateRoute from "./container/routes/PrivateRoute";
 import ProtectedRoutes from "./container/routes/ProtectedRoutes";
@@ -19,18 +20,20 @@ import Register from "./container/pages/Auth/Register";
 import themeOverrides from "./config/themeOverrides";
 import { SocketProvider } from "./context/socket";
 
-const storeProvider = store();
+const { defaultAlgorithm, darkAlgorithm } = theme;
 
 const App = () => {
 
+  const isDarkMode = useSelector(state => state.app.isDarkMode);
+
   return (
-    <Provider store={storeProvider}>
-      <ConfigProvider theme={themeOverrides}>
+    <HappyProvider>
+      <ConfigProvider theme={{ ...themeOverrides, algorithm: isDarkMode ? darkAlgorithm : defaultAlgorithm }}>
         <SocketProvider>
           <Router>
             <Suspense
               fallback={
-                <div className="w-screen h-screen flex items-center justify-center bg-[#0000]">
+                <div className={classNames("w-screen h-screen flex items-center justify-center", isDarkMode ? "bg-gray-800" : "bg-white")}>
                   <span className="loader1"></span>
                 </div>
               }
@@ -49,7 +52,7 @@ const App = () => {
           </Router>
         </SocketProvider>
       </ConfigProvider>
-    </Provider>
+    </HappyProvider>
   );
 };
 

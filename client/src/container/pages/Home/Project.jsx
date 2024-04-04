@@ -55,7 +55,7 @@ function Project() {
   }, []);
 
   return (
-    <div className="text-center max-w-5xl w-screen mx-auto px-6 sm:px-2 p-2">
+    <div className="text-center max-w-7xl w-screen mx-auto px-6 sm:px-2 p-2">
       <Row gutter={[24, 24]} className="md:mt-6 items-stretch">
         <Col span={24}>
           <h2 className="text-xl md:text-2xl">My Projects</h2>
@@ -67,9 +67,7 @@ function Project() {
         </Col>
         {loading &&
           <Col span={24}>
-            <Spin spinning={loading} size="large" tip="Loading...">
-              <div className="p-5"></div>
-            </Spin>
+            <Spin spinning={loading} size="large"></Spin>
           </Col>
         }
         {projects.map((proj, index) => <Col md={6} sm={8} xs={12} key={index}>

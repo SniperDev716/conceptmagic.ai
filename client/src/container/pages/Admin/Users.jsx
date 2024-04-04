@@ -15,20 +15,29 @@ import {
   InputNumber,
   Tooltip,
   message,
+  Layout,
 } from "antd";
 import { getAllUsers } from "../../../services/userAPI";
 import useForm from "../../../Hooks/useForm";
 import { increasePlanLimit } from "../../../services/planAPI";
+import { useDispatch, useSelector } from "react-redux";
+import { updatePageState } from "../../../redux/user/userSlice";
 
 const { Search } = Input;
+const { Content } = Layout;
 
 function Users() {
+
+  const dispatch = useDispatch();
+  
+  const pageState = useSelector(state => state.user);
+
   const [showGiveModal, setShowGiveModal] = useState(false);
   const [users, setUsers] = useState([]);
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(pageState.page);
+  const [total, setTotal] = useState(pageState.total);
   const [loading, setLoading] = useState(false);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(pageState.pageSize);
   const [selectedUser, setSelectedUser] = useState(null);
   const [formData, handleChange] = useForm({});
   const [form] = Form.useForm();
@@ -170,6 +179,11 @@ function Users() {
       setLoading(false);
       setUsers(data.users.map((user) => ({ ...user, key: user._id })));
       setTotal(data.total);
+      dispatch(updatePageState({
+        total: data.total,
+        page,
+        pageSize,
+      }));
     });
   };
 
@@ -187,7 +201,7 @@ function Users() {
   };
 
   return (
-    <div className="container mx-auto my-4">
+    <Content className="mx-auto p-2 px-5 my-5">
       <Row gutter={[16, 16]}>
         <Col sm={12} md={8} lg={6} xl={4}>
           <Search
@@ -305,7 +319,7 @@ function Users() {
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </Content>
   );
 }
 
