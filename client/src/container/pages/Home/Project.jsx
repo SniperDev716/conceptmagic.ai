@@ -14,7 +14,7 @@ import { getPlans } from "../../../redux/plan/planSlice";
 import { getUserSubscription } from "../../../services/planAPI";
 
 const { Meta } = Card;
-
+const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const stripePromise = loadStripe(constants.stripePK);
@@ -55,7 +55,7 @@ function Project() {
   }, []);
 
   return (
-    <div className="text-center max-w-7xl w-screen mx-auto px-6 sm:px-2 p-2">
+    <Content className="text-center max-w-7xl w-screen mx-auto px-6 sm:px-2 p-2">
       <Row gutter={[24, 24]} className="md:mt-6 items-stretch">
         <Col span={24}>
           <h2 className="text-xl md:text-2xl">My Projects</h2>
@@ -99,7 +99,7 @@ function Project() {
           setSuccessful={() => { }}
         />
       </Elements>
-    </div>
+    </Content>
   );
 }
 
