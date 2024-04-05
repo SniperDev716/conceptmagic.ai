@@ -21,13 +21,38 @@ exports.getAll = async (req, res) => {
   }
 };
 
+exports.createSetupIntent = async (req, res) => {
+  try {
+    let customerId = req.user.stripeId;
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: req.user.email,
+      });
+      customerId = customer.id;
+    }
+
+    const setupIntent = await stripe.setupIntents.create({
+      customer: customerId,
+      usage: 'off_session', // Indicate that the payment method will be used later
+    });
+
+    return res.json({ clientSecret: setupIntent.client_secret, customerId });
+  } catch (error) {
+    return res.status(400).json({ error: { message: error.message } });
+  }
+};
+
 exports.createSubscription = async (req, res) => {
   try {
     // create a stripe customer
-    const { paymentMethod, planId, pm_type, pm_last_four } = req.body;
+    const { paymentMethod, planId, pm_type, pm_last_four, customerId } = req.body;
     const plan = await Plan.findById(planId);
     const priceId = plan.stripe_plan;
-    let customerId = req.user.stripeId;
+    // let customerId = req.user.stripeId;
+    let trial = {};
+    if (!req.user.pm_last_four) {
+      trial = { trial_period_days: 7 };
+    }
     if (!customerId) {
       let customer = await stripe.customers.create({
         name: req.user.name,
@@ -73,7 +98,7 @@ exports.createSubscription = async (req, res) => {
       req.user.selectedSubscriptionId,
     ).populate('planId');
     let subscription;
-    let trial = { trial_period_days: 7 };
+
     /* if (actSub && selSub) {
       if (actSub.planId.price < plan.price) {
         req.user.activeSubscriptionId = null;
@@ -364,7 +389,7 @@ exports.getActivePlan = async (req, res) => {
 
     return res.json({
       success: true,
-      plan: req.user.plan,
+      // plan: req.user.plan,
     });
   } catch (error) {
     console.log(error);

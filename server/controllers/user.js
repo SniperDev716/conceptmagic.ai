@@ -1,3 +1,4 @@
+const SubscriptionModel = require("../models/subscription");
 const User = require("../models/userModel");
 
 exports.getUser = async (req, res) => {
@@ -8,6 +9,7 @@ exports.getUser = async (req, res) => {
     stripeId: req.user.stripeId,
     isAdmin: req.user.permission == 1,
     pm_last_four: req.user.pm_last_four,
+    activeSubscription: await SubscriptionModel.findById(req.user.activeSubscriptionId),
   };
   return res.json({
     success: true,

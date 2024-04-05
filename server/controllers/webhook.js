@@ -20,13 +20,14 @@ exports.index = async (req, res) => {
 
   console.log(event.type);
   if (event.type === 'customer.subscription.updated') {
-    console.log(event.data.object);
+    console.log("[LOG]:customer.subscription.updated", event.data.object);
     const subscription = event.data.object;
     await Subscription.findOneAndUpdate(
       { stripeId: subscription.id },
       {
         $set: {
           ends_at: subscription.cancel_at,
+          stripe_status: subscription.status,
         },
       },
     );
@@ -51,7 +52,7 @@ exports.index = async (req, res) => {
       next_payment_at: subscription.current_period_end * 1000
     });
   } else if (event.type == 'customer.subscription.deleted') {
-    console.log(event.data.object.id);
+    console.log("[LOG]:customer.subscription.deleted", event.data.object);
     const subscription = await Subscription.findOne({ stripeId: event.data.object.id });
     if (subscription) {
       const user = await User.findOne({ activeSubscriptionId: subscription._id });
@@ -61,14 +62,14 @@ exports.index = async (req, res) => {
         user.selectedSubscriptionId = null;
         await user.save();
       }
-      if(user) {
+      if (user) {
         user.activeSubscriptionId = null;
         await user.save();
       }
       await subscription.delete();
     }
   } else if (event.type === 'invoice.payment_failed') {
-    console.log(event, '----------');
+    console.log("[LOG]:invoice.payment_failed", event.data.object);
   } else if (event.type === 'customer.subscription.trial_will_end') {
     const subscription = event.data.object;
     // console.log(subscription, subscription.metadata.admin, 'will end');

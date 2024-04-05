@@ -64,6 +64,18 @@ exports._getImages = async (imageId, req) => {
   }
 };
 
+exports.getImages = async (imageId) => {
+  try {
+    let response = await axiosClient.get(`${imageId}`);
+    let responseData = response.data;
+    let data = responseData.data;
+    console.log(data.status, Date.now());
+    return data;
+  } catch (error) {
+    console.error('Error', error);
+    throw error;
+  }
+};
 
 // generateImage();
 

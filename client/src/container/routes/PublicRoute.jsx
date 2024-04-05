@@ -5,12 +5,13 @@ import {
   Outlet,
   useLocation,
 } from 'react-router-dom';
+import { getStorage } from "../../helpers";
 
 function PublicRoute() {
   const location = useLocation();
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-
-  return !isAuthenticated ? <Outlet /> : <Navigate to='/home' />
+  const flag = getStorage('registered');
+  return !isAuthenticated ? <Outlet /> : <Navigate to={flag ? '/welcome' : '/projects'} />
 }
 
 export default PublicRoute;

@@ -4,30 +4,27 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, Card, Col, Image, Layout, Row, Spin, Typography } from "antd";
 import { FileAddOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 
-import PayModal from "./Partials/PayModal";
 import { getProjects } from "../../../services/v1API";
 import constants from "../../../config/constants";
 import { getPlans } from "../../../redux/plan/planSlice";
 import { getUserSubscription } from "../../../services/planAPI";
+import { setOpenPayModal } from "../../../redux/app/appSlice";
 
 const { Meta } = Card;
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
-const stripePromise = loadStripe(constants.stripePK);
-
 function Project() {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const openPayModal = useSelector(state => state.app.openPayModal);
+  const user = useSelector(state => state.auth.user);
   const { id } = useParams();
 
-  const plans = useSelector(state => state.plan.plans ?? []);
-
   const [projects, setProjects] = useState([]);
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [actSub, setActSub] = useState({});
   const [selSub, setSelSub] = useState({});
@@ -45,14 +42,15 @@ function Project() {
       setLoading(false);
     });
 
-    if (plans.length === 0) {
-      dispatch(getPlans());
-    }
     getUserSubscription().then(res => {
       setActSub(res.data.activeSubscription ?? {});
       setSelSub(res.data.selectedSubscription ?? {});
     });
   }, []);
+
+  const setOpenModal = () => {
+    dispatch(setOpenPayModal());
+  }
 
   return (
     <Content className="text-center max-w-7xl w-screen mx-auto px-6 sm:px-2 p-2">
@@ -60,9 +58,14 @@ function Project() {
         <Col span={24}>
           <h2 className="text-xl md:text-2xl">My Projects</h2>
           <div className="text-right">
-            <Link to={`/home`}>
-              <Button /* onClick={() => { setOpen(true) }} */ type="primary" icon={<FileAddOutlined />}>New Project</Button>
-            </Link>
+            {/* <Link to={`/home`}> */}
+            <Button onClick={() => {
+              return navigate('/home');
+              // if (user.activeSubscription) {
+              // }
+              // setOpenModal();
+            }} type="primary" icon={<FileAddOutlined />}>New Project</Button>
+            {/* </Link> */}
           </div>
         </Col>
         {loading &&
@@ -90,15 +93,6 @@ function Project() {
           <h1>No Prjects</h1>
         </Col>}
       </Row>
-      <Elements stripe={stripePromise} nonce="random-nonce">
-        <PayModal
-          open={open}
-          setOpen={setOpen}
-          price={plans[0]?.price}
-          planId={plans[0]?._id}
-          setSuccessful={() => { }}
-        />
-      </Elements>
     </Content>
   );
 }

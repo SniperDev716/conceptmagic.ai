@@ -23,7 +23,7 @@ const SubscriptionSchema = new Schema(
     },
     stripe_status: {
       type: String,
-      default: 'ACTIVE',
+      default: 'active',
     },
     stripe_price: {
       type: String,

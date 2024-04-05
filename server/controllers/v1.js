@@ -80,7 +80,7 @@ exports.getImageDescriptions = async (req, res) => {
       inputImages,
       userId: req.user._id,
       name,
-      resultImages: [{ imageId: "tmp", status: "processing" }]
+      resultImages: [{ imageId: "tmp", status: "processing" }, ...(new Array(10).fill(0).map((_, index) => ({ imageId: `tmp-${index}`, addition: 'Generating with AI...', status: "processing" })))]
     });
 
     await concept.save();
@@ -91,72 +91,79 @@ exports.getImageDescriptions = async (req, res) => {
     getDescription(path).then(async prompt => {
       concept.inputImages[0].desc = prompt;
       let ideas = await getIdeas(prompt);
-      _generateImage(prompt).then(async data => {
-        concept.resultImages = [{ imageId: data.id, prompt, status: data.status }];
-        ideas.forEach((idea, index) => {
-          concept.resultImages = [...concept.resultImages, { imageId: `tmp-${index}`, parent: data.id, addition: idea, status: "processing" }];
-        });
+      concept.resultImages = [{ imageId: "tmp", prompt, status: "processing" }];
+      for (const [index, idea] of ideas.entries()) {
+        concept.resultImages[index + 1] = { imageId: `tmp-${index}`, addition: idea, status: "processing" };
+      }
+      await concept.save();
+      for (const [index, idea] of ideas.entries()) {
+        let newPrompt = await getPromptByKeywords(idea, prompt);
+        concept.resultImages[index + 1] = { imageId: `tmp-${index}`, prompt: newPrompt, addition: idea, status: "processing" };
         await concept.save();
+      }
 
-        ideas.forEach((idea, index) => {
-          // let tmpId = randomUUID();
-          new Promise(async () => {
+      // _generateImage(prompt).then(async data => {
 
-            let newPrompt = await getPromptByKeywords(idea, prompt);
+      //   // ideas.forEach((idea, index) => {
+      //   //   // let tmpId = randomUUID();
+      //   //   new Promise(async () => {
 
-            let _data = await _generateImage(newPrompt);
 
-            await ConceptModel.updateOne(
-              {
-                _id: concept._id,
-                'resultImages.imageId': `tmp-${index}`
-              },
-              {
-                $set: {
-                  'resultImages.$.imageId': _data.id,
-                  'resultImages.$.prompt': newPrompt,
-                  'resultImages.$.status': _data.status,
-                }
-              }, { new: true });
-            _getImages(_data.id, req).then(async (_res) => {
-              await ConceptModel.updateOne(
-                {
-                  _id: concept._id,
-                  'resultImages.imageId': _data.id
-                },
-                {
-                  $set: {
-                    'resultImages.$.urls': _res.upscaled_urls,
-                    'resultImages.$.status': _res.status,
-                  }
-                }, { new: true });
-              socketio.getSocketIO().to(req.user._id.toString()).emit('IMAGE_GENERATED', {
-                success: true,
-              });
-            });
-          });
-        });
-        // for (const idea of ideas) {
+      //   //     // let _data = await _generateImage(newPrompt);
 
-        // }
+      //   //     // await ConceptModel.updateOne(
+      //   //     //   {
+      //   //     //     _id: concept._id,
+      //   //     //     'resultImages.imageId': `tmp-${index}`
+      //   //     //   },
+      //   //     //   {
+      //   //     //     $set: {
+      //   //     //       'resultImages.$.imageId': _data.id,
+      //   //     //       'resultImages.$.prompt': newPrompt,
+      //   //     //       'resultImages.$.status': _data.status,
+      //   //     //     }
+      //   //     //   }, { new: true });
 
-        _getImages(data.id, req).then(async (_res) => {
-          await ConceptModel.updateOne(
-            {
-              _id: concept._id,
-              'resultImages.imageId': data.id
-            },
-            {
-              $set: {
-                'resultImages.$.urls': _res.upscaled_urls,
-                'resultImages.$.status': _res.status,
-              }
-            }, { new: true });
-          socketio.getSocketIO().to(req.user._id.toString()).emit('IMAGE_GENERATED', {
-            success: true,
-          });
-        });
-      });
+      //   //     // _getImages(_data.id, req).then(async (_res) => {
+      //   //     //   await ConceptModel.updateOne(
+      //   //     //     {
+      //   //     //       _id: concept._id,
+      //   //     //       'resultImages.imageId': _data.id
+      //   //     //     },
+      //   //     //     {
+      //   //     //       $set: {
+      //   //     //         'resultImages.$.urls': _res.upscaled_urls,
+      //   //     //         'resultImages.$.status': _res.status,
+      //   //     //       }
+      //   //     //     }, { new: true });
+      //   //     //   socketio.getSocketIO().to(req.user._id.toString()).emit('IMAGE_GENERATED', {
+      //   //     //     success: true,
+      //   //     //   });
+      //   //     // });
+
+      //   //   });
+      //   // });
+      //   // for (const idea of ideas) {
+
+      //   // }
+
+      //   // _getImages(data.id, req).then(async (_res) => {
+      //   //   await ConceptModel.updateOne(
+      //   //     {
+      //   //       _id: concept._id,
+      //   //       'resultImages.imageId': data.id
+      //   //     },
+      //   //     {
+      //   //       $set: {
+      //   //         'resultImages.$.urls': _res.upscaled_urls,
+      //   //         'resultImages.$.status': _res.status,
+      //   //       }
+      //   //     }, { new: true });
+      //   //   socketio.getSocketIO().to(req.user._id.toString()).emit('IMAGE_GENERATED', {
+      //   //     success: true,
+      //   //   });
+      //   // });
+      // });
     });
 
 
@@ -282,7 +289,7 @@ exports.generateImage = async (req, res) => {
 
       prompt = prompt || prevPrompt;
 
-      let data = await _generateImage(prompt);
+      // let data = await _generateImage(prompt);
 
       await ConceptModel.updateOne(
         {
@@ -291,35 +298,35 @@ exports.generateImage = async (req, res) => {
         },
         {
           $set: {
-            'resultImages.$.imageId': data.id,
+            // 'resultImages.$.imageId': data.id,
             'resultImages.$.prompt': prompt,
-            'resultImages.$.status': data.status,
+            // 'resultImages.$.status': data.status,
           }
         }, { new: true });
-
+      resolve(true);
       // concept.resultImages = [...concept.resultImages, { imageId: data.id, prompt, status: data.status }];
 
       // await concept.save();
 
-      _getImages(data.id, req).then(async (_res) => {
-        await ConceptModel.updateOne(
-          {
-            _id: concept._id,
-            'resultImages.imageId': data.id
-          },
-          {
-            $set: {
-              'resultImages.$.urls': _res.upscaled_urls,
-              'resultImages.$.status': _res.status,
-            }
-          }, { new: true });
+      // _getImages(data.id, req).then(async (_res) => {
+      //   await ConceptModel.updateOne(
+      //     {
+      //       _id: concept._id,
+      //       'resultImages.imageId': data.id
+      //     },
+      //     {
+      //       $set: {
+      //         'resultImages.$.urls': _res.upscaled_urls,
+      //         'resultImages.$.status': _res.status,
+      //       }
+      //     }, { new: true });
 
-        socketio.getSocketIO().to(req.user._id.toString()).emit('IMAGE_GENERATED', {
-          success: true,
-        });
-        resolve(true);
-        // console.log(req.user.socketId, '--=-=-=-=-=-=-=-=-=-=-=-=-');
-      });
+      //   socketio.getSocketIO().to(req.user._id.toString()).emit('IMAGE_GENERATED', {
+      //     success: true,
+      //   });
+      //   resolve(true);
+      //   // console.log(req.user.socketId, '--=-=-=-=-=-=-=-=-=-=-=-=-');
+      // });
     });
     return res.json({
       success: true,

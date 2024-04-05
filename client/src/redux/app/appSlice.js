@@ -3,6 +3,7 @@ import { getStorage, setStorage } from "../../helpers";
 
 const initialState = {
     isDarkMode: getStorage('theme') == 'dark',
+    openPayModal: false,
 };
 
 const appSlice = createSlice({
@@ -13,9 +14,12 @@ const appSlice = createSlice({
             state.isDarkMode = !state.isDarkMode;
             setStorage('theme', state.isDarkMode ? 'dark' : 'light');
         },
+        setOpenPayModal(state, action) {
+            state.openPayModal = !state.openPayModal;
+        }
     },
 });
 
-export const { setDarkMode } = appSlice.actions;
+export const { setDarkMode, setOpenPayModal } = appSlice.actions;
 
 export default appSlice.reducer;

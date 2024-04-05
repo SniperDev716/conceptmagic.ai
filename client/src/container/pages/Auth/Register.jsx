@@ -5,6 +5,7 @@ import { Form, Input, Button, Checkbox, Card, Typography } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { register } from '../../../redux/auth/authSlice';
 import GuestLayout from '../../layouts/GuestLayout';
+import { setStorage } from '../../../helpers';
 
 const { Title } = Typography;
 
@@ -17,7 +18,8 @@ function Register() {
   const dispatch = useDispatch();
   const onFinish = (values) => {
     // console.log('Received values of form: ', values);
-    dispatch(register({ ...values, search: location.search, navigate }));
+    setStorage('registered', '1');
+    dispatch(register({ ...values, search: location.search }));
     // navigate('/welcome');
   };
   return (

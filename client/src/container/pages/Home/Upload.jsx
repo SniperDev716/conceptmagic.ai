@@ -279,7 +279,7 @@ function UploadContainer() {
         </Col>} */}
         <Col span={24}>
           <div className="text-center">
-            <Button type="primary" size="large" onClick={handleNext} loading={loading}>Next step</Button>
+            <Button type="primary" size="large" onClick={handleNext} loading={loading} className="w-72">Generate</Button>
           </div>
         </Col>
       </Row>

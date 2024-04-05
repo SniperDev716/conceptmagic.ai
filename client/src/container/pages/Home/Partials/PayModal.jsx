@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal, message, Typography, Radio, Divider } from "antd";
 import { CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { getUser } from "../../../../redux/auth/authSlice";
-import { createSubscription } from "../../../../services/planAPI";
+import { createSetupIntent, createSubscription } from "../../../../services/planAPI";
 
 const { Title } = Typography;
 
@@ -61,10 +61,14 @@ function PayModal({ open, setOpen, price, planId, setSuccessful }) {
 
       }
 
+      const response = await createSetupIntent();
+
+
       let { data } = await createSubscription({
         paymentMethod: paymentMethod?.paymentMethod?.id,
         pm_type: paymentMethod?.paymentMethod?.card.brand,
         pm_last_four: paymentMethod?.paymentMethod?.card.last4,
+        customerId: response.data.customerId,
         planId,
       });
 
@@ -94,7 +98,7 @@ function PayModal({ open, setOpen, price, planId, setSuccessful }) {
       dispatch(getUser());
       setOpen(false);
       setLoading(false);
-      // message.success("Successfully requested!");
+      message.success("Successfully subscribed!");
       // setSuccessful(true);
       // setTimeout(() => {
       //   navigate("/restore");
@@ -245,7 +249,7 @@ function PayModal({ open, setOpen, price, planId, setSuccessful }) {
         </div>
         <Divider className="mt-0"></Divider>
         <div className="flex items-center">
-          <img src="/imgs/user.png" alt="User" className="w-28 pr-4" />
+          <img src="/imgs/Lady.png" alt="User" className="w-28 pr-4" />
           <div className="flex-1">
             <p className="mb-2">"I honestly can't believe it's only $15 a month. I've gotten at least $500 worth of value within the first 20 minutes of using Concept."</p>
             <p className="m-0 font-bold">- Taylor Hewitt, CEO @ Andine</p>

@@ -20,13 +20,14 @@ const routes = [
   {
     path: 'upload',
     component: lazy(() => import('../pages/Home/Upload')),
+    // isPayed: true,
     exact: true,
   },
-  {
-    path: 'desc/:id',
-    component: lazy(() => import('../pages/Home/Description')),
-    exact: true,
-  },
+  // {
+  //   path: 'desc/:id',
+  //   component: lazy(() => import('../pages/Home/Description')),
+  //   exact: true,
+  // },
   {
     path: 'result/:id',
     component: lazy(() => import('../pages/Home/Result')),
@@ -35,28 +36,29 @@ const routes = [
   {
     path: 'home',
     component: lazy(() => import('../pages/Home/Home')),
+    // isPayed: true,
     exact: true,
   },
-  {
-    path: 'photos',
-    component: lazy(() => import('../pages/Home/Photos')),
-    exact: true,
-  },
-  {
-    path: 'admin/users/:id/history',
-    component: lazy(() => import('../pages/Home/Home')),
-    exact: true,
-  },
-  {
-    path: 'plans',
-    component: lazy(() => import('../pages/Price/Lists')),
-    exact: true,
-  },
-  {
-    path: 'plans/:slug',
-    component: lazy(() => import('../pages/Price/Subscription')),
-    exact: true,
-  },
+  // {
+  //   path: 'photos',
+  //   component: lazy(() => import('../pages/Home/Photos')),
+  //   exact: true,
+  // },
+  // {
+  //   path: 'admin/users/:id/history',
+  //   component: lazy(() => import('../pages/Home/Home')),
+  //   exact: true,
+  // },
+  // {
+  //   path: 'plans',
+  //   component: lazy(() => import('../pages/Price/Lists')),
+  //   exact: true,
+  // },
+  // {
+  //   path: 'plans/:slug',
+  //   component: lazy(() => import('../pages/Price/Subscription')),
+  //   exact: true,
+  // },
   {
     path: 'user/profile',
     component: lazy(() => import('../pages/Profile/Edit')),

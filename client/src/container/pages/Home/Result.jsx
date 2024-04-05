@@ -57,12 +57,14 @@ function Result() {
       socket.on('IMAGE_GENERATED', (data) => {
         console.log('IMAGE_GENERATED');
         getImage();
+        setCount(data.count);
       });
       socket.on('IMAGE_PROCESS', (data) => {
         console.log('IMAGE_PROCESS'/* , data.url */);
-        if (!progress[data.id] || prevProgress[data.id].status !== progress[data.id].status) {
+        if (!progress[data.id]) {
           getImage();
         }
+        setCount(data.count);
         setProgress(prev => ({
           ...prev,
           [data.id]: {
@@ -85,7 +87,7 @@ function Result() {
   const getImage = () => {
     getConceptById(id).then(res => {
       setConcept(res.data.concept);
-      setCount(res.data.count);
+      // setCount(res.data.count);
       if (res.data.concept) {
         setAdvancedValue((prev) => res.data.concept.resultImages.map((data, index) => prev[index] ? prev[index] : data.prompt));
         setIsAdvanced((prev) => {
@@ -186,7 +188,6 @@ function Result() {
     setLoading(-1);
   }
 
-
   return (
     <div className="text-center max-w-7xl w-screen mx-auto p-4">
       <Row gutter={[12, 12]} className="sm:mt-6">
@@ -194,7 +195,7 @@ function Result() {
           <h2 className="sm:text-xl md:text-2xl !text-shadow-lg capitalize">{concept.name}</h2>
         </Col> */}
         <Col span={24}>
-          {concept.resultImages?.filter(data => (data.status == "completed" || data.status == "faild")).length > 0 ? <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">These images are <span className="text-black font-bold">AI Generated</span>. Use words to change them however you want.</h4> : <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">You are <span className="text-black font-bold">{count < 8 ? 8 : count}th</span> in line for the <span className="text-black font-bold">Free Tier</span>. Please wait 3 minutes or <span className="text-purple-800 font-bold">Upgrade to PRO</span>.</h4>}
+          {concept.resultImages?.filter(data => (data.status == "completed" || data.status == "faild")).length > 0 ? <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">These images are <span className="text-black font-bold">AI Generated</span>. Use words to change them however you want.</h4> : <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">You are <span className="text-black font-bold">{Number(count) + 1}th</span> in line for the <span className="text-black font-bold">Free Tier</span>. Please wait 3 minutes or <span className="text-purple-800 font-bold">Upgrade to PRO</span>.</h4>}
         </Col>
         {/* <Col span={24}>
           <div className="border-1 border-solid border-gray-300 bg-gray-100 py-2 px-4 text-left">
@@ -205,21 +206,24 @@ function Result() {
         <div className={classNames("p-4 rounded shadow-none mb-4 w-full", isDarkMode ? "bg-gray-800" : "bg-white")}>
           {(!concept.resultImages) && <div className="w-full h-44 bg-center bg-no-repeat bg-[length:400px_300px]" style={{ backgroundImage: `url(${loadingGif})`, backgroundColor: "#E9E9EB" }}><br /><br /><br /><br /><br /><br /><br /><br />Loading...</div>}
           {concept.resultImages?.map((data, index) => <Row gutter={[24, 24]} key={index}>
+            {index == 1 && <Col span={24}>
+              <div className="bg-black text-white p-2 rounded text-lg">We've automatically created 10 versions of your initial image to show you what is possible. Read the text in purple to see the changes we told the AI to make for each version.</div>
+            </Col>}
             {data.addition && <Col span={24} className="">
               <p className={classNames("mb-0 text-left p-2 border-l-4 border-0 border-solid rounded-r-full", isDarkMode ? "border-l-gray-300 bg-gray-700 text-gray-300" : "border-l-gray-500 bg-gray-100 text-gray-700")}>{data.addition}</p>
             </Col>}
-            <Col span={24}>
+            {data.urls?.length > 0 && <Col span={24}>
               <div>
-                {data.urls?.length > 0 && <Image.PreviewGroup>
+                <Image.PreviewGroup>
                   <Row gutter={[12, 12]}>
                     {data.urls?.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
                       <Image src={`${constants.SOCKET_URL}/image/${url.split('/')[url.split('/').length - 2]}/${url.split('/')[url.split('/').length - 1]}?w=170&h=170`} preview={{ src: `${url}` }} /* placeholder={<Image preview={false} src={`${constants.SOCKET_URL}/image/${url.split('/')[url.split('/').length - 2]}/${url.split('/')[url.split('/').length - 1]}?w=100&h=100`} width={'100%'} />} */ width={'100%'} />
                       {/* <div className="mt-2 text-center"><Button icon={<FormOutlined />}>Select</Button></div> */}
                     </Col>)}
                   </Row>
-                </Image.PreviewGroup>}
+                </Image.PreviewGroup>
               </div>
-            </Col>
+            </Col>}
             {(data.status !== 'completed' && data.status !== 'failed') && (data.parent ? ((concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.length > 0 && index > 10) ? concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
               <div className="relative flex justify-center items-center flex-col bg-gray-200">
                 <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId].url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`transition-[filter] duration-1000 ease-in-out w-full clip_${prevProgress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
@@ -307,11 +311,8 @@ function Result() {
               </div>
               <Divider />
             </Col>
-            {index == 0 && <Col span={24}>
-              <div className="bg-black text-white p-2 mb-4 rounded text-lg">We've automatically created 10 versions of your initial image to show you what is possible. Read the text in purple to see the changes we told the AI to make for each version.</div>
-            </Col>}
           </Row>)}
-          {concept.resultImages?.length == 1 && new Array(10).fill(0).map((_, index) => {
+          {/* {concept.resultImages?.length == 1 && new Array(10).fill(0).map((_, index) => {
             return (<Row gutter={[24, 24]} key={index}>
               {new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200 relative">
                 <img src={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur-xl" alt="product" />
@@ -334,7 +335,7 @@ function Result() {
                 <Divider />
               </Col>
             </Row>)
-          })}
+          })} */}
         </div>
       </Row>
     </div>

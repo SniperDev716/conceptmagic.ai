@@ -4,6 +4,7 @@ const passport = require('passport');
 const cors = require('cors');
 const path = require('path');
 const http = require('http');
+const dayjs = require("dayjs");
 
 const config = require('./config');
 const socketIO = require('./scripts/socketio');
@@ -12,12 +13,17 @@ const api = require('./routes');
 const request = require('request');
 const sharp = require('sharp');
 const UserModel = require('./models/userModel');
+const { scheduleJob } = require('node-schedule');
+const ConceptModel = require('./models/concepts');
+const { getImages, _generateImage } = require('./utils/imagineAPI');
+const { sleep } = require('./utils/helpers');
 
 mongoose
   .connect(config.MongoURL)
   .then(async () => {
     await UserModel.updateMany({}, { $set: { socketId: [] } });
     console.log('MONGODB connected!');
+    run();
   })
   .catch(console.log);
 
@@ -84,3 +90,72 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, async () => {
   console.log(`Server is running on port : ${PORT}`);
 });
+
+// var job = scheduleJob('*/3 * * * * *', async );
+
+const run = async () => {
+  while (true) {
+    const projects = await ConceptModel.find({
+      "resultImages.status": { $in: ["pending", "processing"] }
+    }).sort("createdAt");
+    console.log("[LOG]:running", projects.length, dayjs().format('YYYY-MM-DD HH:mm:ss'));
+    // console.log(projects);
+    for (const [index, project] of projects.entries()) {
+      for (const resultImage of project.resultImages) {
+        try {
+          if (resultImage.status == "processing") {
+            if (resultImage.prompt) {
+              let data = await _generateImage(resultImage.prompt);
+              await ConceptModel.updateOne(
+                {
+                  _id: project._id,
+                  'resultImages.imageId': resultImage.imageId
+                },
+                {
+                  $set: {
+                    'resultImages.$.imageId': data.id,
+                    'resultImages.$.status': data.status,
+                  }
+                }, { new: true });
+            } else {
+              // let data = await getPromptByKeywords
+            }
+          } else if (resultImage.status !== "completed" && resultImage.status !== "failed") {
+            let data = await getImages(resultImage.imageId);
+            if (data.status != "completed" && data.status != "failed") {
+              socketIO.getSocketIO().to(project.userId.toString()).emit("IMAGE_PROCESS", {
+                progress: data.progress,
+                status: data.status.replace('pending', 'uploading').replace('in-progress', 'generating'),
+                id: data.id,
+                url: data.url,
+                count: index,
+              });
+            } else {
+              console.log("[LOG]:finished", project.userId, project._id);
+              await ConceptModel.updateOne(
+                {
+                  _id: project._id,
+                  'resultImages.imageId': resultImage.imageId
+                },
+                {
+                  $set: {
+                    'resultImages.$.urls': data.upscaled_urls,
+                    'resultImages.$.status': data.status,
+                  }
+                }, { new: true });
+
+              socketIO.getSocketIO().to(project.userId.toString()).emit('IMAGE_GENERATED', {
+                success: true,
+                count: index,
+              });
+            }
+          }
+        } catch (error) {
+          console.log("[ERROR]", error);
+        }
+      }
+    }
+
+    await sleep(1);
+  }
+};
