@@ -16,6 +16,7 @@ import {
   Tooltip,
   message,
   Layout,
+  Badge,
 } from "antd";
 import { getAllUsers } from "../../../services/userAPI";
 import useForm from "../../../Hooks/useForm";
@@ -29,7 +30,7 @@ const { Content } = Layout;
 function Users() {
 
   const dispatch = useDispatch();
-  
+
   const pageState = useSelector(state => state.user);
 
   const [showGiveModal, setShowGiveModal] = useState(false);
@@ -48,7 +49,7 @@ function Users() {
       dataIndex: "_id",
       key: "no",
       width: "50px",
-      render: (_, row, index) => (page - 1) * pageSize + index + 1,
+      render: (_, row, index) => <>{(page - 1) * pageSize + index + 1} {row.socketId.length > 0 ? <Badge status="success" /> : <Badge status="default" />}</>,
     },
     {
       title: "Name",
@@ -130,10 +131,11 @@ function Users() {
       key: "projects",
       render: (_, row) => {
         // console.log(_);
-        return <Link to={`/projects/${row._id}`}><Button size="small">{_?.length || 0}/{_.reduce(
+        let isGenerating = _.reduce((accumulator, project) => accumulator + project.resultImages.filter(img => (img.status == 'pending' || img.status == 'processing')).length, 0);
+        return <Link to={`/projects/${row._id}`}><Badge status="success" count={isGenerating}><Button size="small">{_?.length || 0}/{_.reduce(
           (accumulator, item) => accumulator + item.resultImages.length,
           0,
-        )}</Button></Link>;
+        )}</Button></Badge></Link>;
       },
     },
     // {

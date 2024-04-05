@@ -195,7 +195,7 @@ function Result() {
           <h2 className="sm:text-xl md:text-2xl !text-shadow-lg capitalize">{concept.name}</h2>
         </Col> */}
         <Col span={24}>
-          {concept.resultImages?.filter(data => (data.status == "completed" || data.status == "faild")).length > 0 ? <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">These images are <span className="text-black font-bold">AI Generated</span>. Use words to change them however you want.</h4> : <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">You are <span className="text-black font-bold">{Number(count) + 1}th</span> in line for the <span className="text-black font-bold">Free Tier</span>. Please wait 3 minutes or <span className="text-purple-800 font-bold">Upgrade to PRO</span>.</h4>}
+          {(concept.resultImages?.filter(data => (data.status == "completed" || data.status == "faild")).length > 0 || (Object.values(progress).filter(pro => pro.status == 'generating')).length > 0) ? <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">These images are <span className="text-black font-bold">AI Generated</span>. Use words to change them however you want.</h4> : <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">You are <span className="text-black font-bold">{Number(count) + 1}th</span> in line for the <span className="text-black font-bold">Free Tier</span>. Please wait 3 minutes or <span className="text-purple-800 font-bold">Upgrade to PRO</span>.</h4>}
         </Col>
         {/* <Col span={24}>
           <div className="border-1 border-solid border-gray-300 bg-gray-100 py-2 px-4 text-left">
@@ -213,7 +213,8 @@ function Result() {
               <p className={classNames("mb-0 text-left p-2 border-l-4 border-0 border-solid rounded-r-full", isDarkMode ? "border-l-gray-300 bg-gray-700 text-gray-300" : "border-l-gray-500 bg-gray-100 text-gray-700")}>{data.addition}</p>
             </Col>}
             {data.urls?.length > 0 && <Col span={24}>
-              <div>
+              <div className="relative">
+                <span className="top-0 left-0 z-50 absolute text-white p-2 bg-purple-800">{index + 1}</span>
                 <Image.PreviewGroup>
                   <Row gutter={[12, 12]}>
                     {data.urls?.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
