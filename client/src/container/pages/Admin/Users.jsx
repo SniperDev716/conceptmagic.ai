@@ -48,7 +48,7 @@ function Users() {
       title: "No",
       dataIndex: "_id",
       key: "no",
-      width: "50px",
+      width: "70px",
       render: (_, row, index) => <>{(page - 1) * pageSize + index + 1} {row.socketId.length > 0 ? <Badge status="success" /> : <Badge status="default" />}</>,
     },
     {
