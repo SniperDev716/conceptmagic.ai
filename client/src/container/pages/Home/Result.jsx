@@ -219,7 +219,7 @@ function Result() {
                 <span className="top-0 left-0 z-50 absolute text-white p-2 bg-purple-800 rounded-br-xl shadow-lg">{index + 1}</span>
                 <Image.PreviewGroup>
                   <Row gutter={[12, 12]}>
-                    {data.urls?.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
+                    {data.urls?.map((url, index1) => <Col key={`${index}_${index1}`} xs={12} sm={12} md={6} >
                       <Image src={`${constants.SOCKET_URL}/image/${url.split('/')[url.split('/').length - 2]}/${url.split('/')[url.split('/').length - 1]}?w=170&h=170`} preview={{ src: `${url}` }} /* placeholder={<Image preview={false} src={`${constants.SOCKET_URL}/image/${url.split('/')[url.split('/').length - 2]}/${url.split('/')[url.split('/').length - 1]}?w=100&h=100`} width={'100%'} />} */ width={'100%'} />
                       {/* <div className="mt-2 text-center"><Button icon={<FormOutlined />}>Select</Button></div> */}
                     </Col>)}
@@ -231,33 +231,33 @@ function Result() {
               <div className="relative">
                 <span className="top-0 left-0 z-50 absolute text-white p-2 bg-purple-800 rounded-br-xl shadow-lg">{index + 1}</span>
                 <Row gutter={[12, 12]}>
-                  {(data.parent ? ((concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.length > 0 && index > 10) ? concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
+                  {(data.parent ? ((concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.length > 0 && index > 10) ? concept.resultImages.filter(image => image.imageId == data.parent)[0].urls.map((url, index1) => <Col key={`${index}_${index1}`} xs={12} sm={12} md={6} >
                     <div className="relative flex justify-center items-center flex-col bg-gray-200">
-                      <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId].url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`transition-[filter] duration-[3000ms] ease-in w-full clip_${prevProgress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
+                      <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId].url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`transition-[filter] duration-[3000ms] min-h-[100px] ease-in w-full clip_${prevProgress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
                         filter: `blur(${prevProgress[data.imageId]?.url ? '4px' : '30px'})`
                       }} /></div>
                       <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                         <span className="loader"></span>
-                        <p className="mb-0 text-gray-700 mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
+                        <p className="mb-0 text-gray-700 px-2 py-1 bg-[#eee9] rounded-xl shadow mt-4">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
                       </div>
                     </div>
-                  </Col>) : new Array(4).fill(concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`).map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
+                  </Col>) : new Array(4).fill(concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`).map((url, index1) => <Col key={`${index}_${index1}`} xs={12} sm={12} md={6} >
                     <div className="relative flex justify-center items-center flex-col bg-gray-200">
-                      <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId].url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`transition-[filter] duration-[3000ms] ease-in w-full clip_${prevProgress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
+                      <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url ? progress[data.imageId].url : url}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`transition-[filter] duration-[3000ms] min-h-[100px] ease-in w-full clip_${prevProgress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
                         filter: `blur(${prevProgress[data.imageId]?.url ? '4px' : '30px'})`
                       }} /></div>
                       <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                         <div className="loader"></div>
-                        <p className="mb-0 text-gray-700 mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
+                        <p className="mb-0 text-gray-700 px-2 py-1 bg-[#eee9] rounded-xl shadow mt-4">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
                       </div>
                     </div>
-                  </Col>)) : new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200 relative">
-                    <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url || (concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`)}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`transition-[filter] duration-[3000ms] ease-in w-full clip_${prevProgress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
+                  </Col>)) : new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} xs={12} sm={12} md={6} ><div className="flex justify-center items-center flex-col bg-gray-200 relative">
+                    <div className="relative overflow-hidden"><Image src={`${progress[data.imageId]?.url || (concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`)}`} preview={false} fallback={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className={`transition-[filter] duration-[3000ms] min-h-[100px] ease-in w-full clip_${prevProgress[data.imageId]?.url ? index1 : ''}`} alt="product" style={{
                       filter: `blur(${prevProgress[data.imageId]?.url ? '4px' : '30px'})`
                     }} /></div>
                     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                       <div className="loader"></div>
-                      <p className="mb-0 text-gray-700 mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
+                      <p className="mb-0 text-gray-700 px-2 py-1 bg-[#eee9] rounded-xl shadow mt-4">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
                     </div>
                   </div></Col>))}
                 </Row>
@@ -267,7 +267,7 @@ function Result() {
               <div className="relative">
                 <span className="top-0 left-0 z-50 absolute text-white p-2 bg-purple-800 rounded-br-xl shadow-lg">{index + 1}</span>
                 <Row gutter={[12, 12]}>
-                  {new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
+                  {new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} xs={12} sm={12} md={6} ><div className="flex justify-center items-center flex-col bg-gray-200  p-5">
                     {/* <div className="loader"></div> */}
                     <p className="mb-0">Failed</p>
                   </div></Col>)}
@@ -331,7 +331,7 @@ function Result() {
           </Row>)}
           {/* {concept.resultImages?.length == 1 && new Array(10).fill(0).map((_, index) => {
             return (<Row gutter={[24, 24]} key={index}>
-              {new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200 relative">
+              {new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} xs={12} sm={12} md={6} ><div className="flex justify-center items-center flex-col bg-gray-200 relative">
                 <img src={concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`} className="w-full blur-xl" alt="product" />
                 <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                   <div className="loader"></div>
