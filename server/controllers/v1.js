@@ -351,9 +351,11 @@ exports.getProjects = async (req, res) => {
     const projects = await ConceptModel.find({
       userId
     }).sort('-createdAt');
+    let user = await UserModel.findById(userId);
     return res.json({
       success: false,
-      projects
+      projects,
+      user
     });
   } catch (error) {
     console.log("[ERROR]:getProject", error);

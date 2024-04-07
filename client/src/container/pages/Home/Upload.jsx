@@ -99,6 +99,7 @@ function UploadContainer() {
 
   const handleDelete = (file) => {
     setFileLists([]);
+    setPath("");
     deleteFile({
       path: file.response?.path,
     }).then((res) => {
@@ -172,12 +173,14 @@ function UploadContainer() {
             </div>
           </div>
           <div className="mt-4">
-            {fileLists.length > 0 && <div className="relative w-fit mx-auto">
+            {(fileLists.length > 0 && path) && <div className="relative w-fit mx-auto">
               <Image src={fileLists[0].thumbUrl} className="max-h-80" />
               <div className="absolute top-4 right-4">
                 <Button type="primary" shape="circle" icon={<DeleteOutlined />} danger onClick={() => handleDelete(fileLists[0])}></Button>
               </div>
             </div>}
+            {fileLists.length > 0 && !path && <div className="flex justify-center"><Spin tip={`Uploading(${fileLists[0]?.percent || 0}%)...`}><div className="flex items-center justify-center h-80 w-80">
+            </div></Spin></div>}
           </div>
         </Col>
         <Col span={24}>

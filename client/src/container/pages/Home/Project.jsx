@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button, Card, Col, Image, Layout, Row, Spin, Typography } from "antd";
+import { Badge, Button, Card, Col, Image, Layout, Row, Spin, Typography } from "antd";
 import { FileAddOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
@@ -21,9 +21,10 @@ function Project() {
   const navigate = useNavigate();
 
   const openPayModal = useSelector(state => state.app.openPayModal);
-  const user = useSelector(state => state.auth.user);
+  // const user = useSelector(state => state.auth.user);
   const { id } = useParams();
 
+  const [user, setUser] = useState(null);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [actSub, setActSub] = useState({});
@@ -33,6 +34,7 @@ function Project() {
     setLoading(true);
     getProjects(id).then(res => {
       setProjects(res.data.projects);
+      setUser(res.data.user);
       // if (res.data.projects.length == 0) {
       //   navigate('/welcome');
       // }
@@ -56,7 +58,7 @@ function Project() {
     <Content className="text-center max-w-7xl w-screen mx-auto px-6 sm:px-2 p-2">
       <Row gutter={[24, 24]} className="md:mt-6 items-stretch">
         <Col span={24}>
-          <h2 className="text-xl md:text-2xl">My Projects</h2>
+          <h2 className="text-xl md:text-2xl">{(id && user) ? `${user.name}'s` : 'My'} Projects</h2>
           <div className="text-right">
             {/* <Link to={`/home`}> */}
             <Button onClick={() => {
@@ -75,18 +77,20 @@ function Project() {
         }
         {projects.map((proj, index) => <Col md={6} sm={8} xs={12} key={index}>
           <Link to={`/result/${proj._id}`}>
-            <Card
-              hoverable
-              key={index}
-              style={{
-                width: "100%",
-                height: "100%"
-              }}
-              cover={<div className="h-[150px] md:h-[200px] bg-cover bg-no-repeat bg-blue-200" style={{ backgroundImage: proj.inputImages[0].path.includes('https://') ? `url(${proj.inputImages[0].path})` : `url(${constants.SOCKET_URL}${proj.inputImages[0].path})` }}></div>}
-            >
-              {/* <img alt="image" className=" w-auto" src={} /> */}
-              <Meta title={proj.name || "Untitled"} description={<small>{dayjs(proj.createdAt).format("MM/DD/YY hh:mm A")}</small>} />
-            </Card>
+            <Badge.Ribbon text={`${(proj.resultImages.filter(img => img.status == 'completed' || img.status == 'failed')).length}/${proj.resultImages.length}`} color="purple">
+              <Card
+                hoverable
+                key={index}
+                style={{
+                  width: "100%",
+                  height: "100%"
+                }}
+                cover={<div className="h-[150px] md:h-[200px] bg-cover bg-no-repeat bg-blue-200" style={{ backgroundImage: proj.inputImages[0].path.includes('https://') ? `url(${proj.inputImages[0].path})` : `url(${constants.SOCKET_URL}${proj.inputImages[0].path})` }}></div>}
+              >
+                {/* <img alt="image" className=" w-auto" src={} /> */}
+                <Meta title={proj.name || "Untitled"} description={<small>{dayjs(proj.createdAt).format("MM/DD/YY hh:mm A")}</small>} />
+              </Card>
+            </Badge.Ribbon>
           </Link>
         </Col>)}
         {(!loading && projects.length == 0) && <Col span={24}>

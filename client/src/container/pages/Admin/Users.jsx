@@ -132,10 +132,14 @@ function Users() {
       render: (_, row) => {
         // console.log(_);
         let isGenerating = _.reduce((accumulator, project) => accumulator + project.resultImages.filter(img => (img.status == 'pending' || img.status == 'processing')).length, 0);
-        return <Link to={`/projects/${row._id}`}><Badge status="success" count={isGenerating}><Button size="small">{_?.length || 0}/{_.reduce(
-          (accumulator, item) => accumulator + item.resultImages.length,
-          0,
-        )}</Button></Badge></Link>;
+        return <Link to={`/projects/${row._id}`}>
+          <Badge status="success" count={isGenerating}>
+            <Button size="small">{_?.length || 0}/{_.reduce(
+              (accumulator, item) => accumulator + item.resultImages.length,
+              0,
+            )}</Button>
+          </Badge>
+        </Link>;
       },
     },
     // {
