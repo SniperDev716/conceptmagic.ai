@@ -212,7 +212,7 @@ function Result() {
               <div className="bg-black text-white p-2 rounded text-lg">We've automatically created 10 versions of your initial image to show you what is possible. Read the text above each image set to see the changes we told the AI to make for each version.</div>
             </Col>}
             {data.addition && <Col span={24} className="">
-              <p className={classNames("mb-0 text-left p-2 border-l-4 border-0 border-solid rounded-r-full", isDarkMode ? "border-l-gray-300 bg-gray-700 text-gray-300" : "border-l-gray-500 bg-gray-100 color-animation text-gray-700")}>{data.addition}</p>
+              <p className={classNames("mb-0 text-left p-2 border-l-4 border-0 border-solid rounded-r-full", isDarkMode ? "border-l-gray-300 bg-gray-700 text-gray-300" : "border-l-gray-500 bg-gray-100 text-gray-700")}>{data.addition}</p>
             </Col>}
             {data.urls?.length > 0 && <Col span={24}>
               <div className="relative">
@@ -238,7 +238,7 @@ function Result() {
                       }} /></div>
                       <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                         <span className="loader"></span>
-                        <p className="mb-0 color-animation text-gray-700 mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
+                        <p className="mb-0 text-gray-700 mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
                       </div>
                     </div>
                   </Col>) : new Array(4).fill(concept.inputImages[0].path.includes('https://') ? `${concept.inputImages[0].path}` : `${constants.SOCKET_URL}${concept.inputImages[0].path}`).map((url, index1) => <Col key={`${index}_${index1}`} span={6}>
@@ -248,7 +248,7 @@ function Result() {
                       }} /></div>
                       <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                         <div className="loader"></div>
-                        <p className="mb-0 color-animation text-gray-700 mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
+                        <p className="mb-0 text-gray-700 mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
                       </div>
                     </div>
                   </Col>)) : new Array(4).fill(0).map((_, index1) => <Col key={`${index}_${index1}`} span={6}><div className="flex justify-center items-center flex-col bg-gray-200 relative">
@@ -257,7 +257,7 @@ function Result() {
                     }} /></div>
                     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center flex-col">
                       <div className="loader"></div>
-                      <p className="mb-0 color-animation text-gray-700 mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
+                      <p className="mb-0 text-gray-700 mt-2">{progress[data.imageId] ? `${progress[data.imageId].status}${progress[data.imageId].status == 'generating' ? ` (${progress[data.imageId].progress}%)` : ''}...` : `${data.status}...`}</p>
                     </div>
                   </div></Col>))}
                 </Row>
