@@ -196,9 +196,9 @@ function Result() {
         {/* <Col span={24}>
           <h2 className="sm:text-xl md:text-2xl !text-shadow-lg capitalize">{concept.name}</h2>
         </Col> */}
-        <Col span={24}>
+        {concept.resultImages.length > 0 && <Col span={24}>
           {(concept.resultImages?.filter(data => (data.status == "completed" || data.status == "faild")).length > 0 || (Object.values(progress).filter(pro => pro.status == 'generating')).length > 0) ? <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">These images are <span className="text-black font-bold">AI Generated</span>. Use words to change them however you want.</h4> : <h4 className="bg-purple-400 rounded-full p-2 px-3 !text-white sm:text-lg md:text-xl">You are <span className="text-black font-bold">{ordersText[count < 6 ? 6 : count] || `${count < 6 ? 6 : count + 1}th`}</span> in line for the <span className="text-black font-bold">Free Tier</span>. Please wait 3 minutes or <span className="text-purple-800 font-bold">Upgrade to PRO</span>.</h4>}
-        </Col>
+        </Col>}
         {/* <Col span={24}>
           <div className="border-1 border-solid border-gray-300 bg-gray-100 py-2 px-4 text-left">
             {(keywords.length == 0) && "no selected keywords!"}
