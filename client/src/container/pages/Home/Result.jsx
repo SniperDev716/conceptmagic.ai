@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import classNames from "classnames";
@@ -10,7 +10,7 @@ import { WithContext as ReactTags } from 'react-tag-input';
 import { getPlan } from "../../../redux/auth/authSlice";
 import constants from "../../../config/constants";
 import { getStorage } from "../../../helpers";
-import { generateImage, getConceptById, getImageDescription } from "../../../services/v1API";
+import { generateImage, getConceptById, getBlendingIdeas } from "../../../services/v1API";
 import { useSocket } from "../../../context/socket";
 
 import loadingGif from "../../../assets/images/loading.gif";
@@ -20,6 +20,386 @@ const { TextArea } = Input;
 const { Title, Text } = Typography;
 
 const ordersText = ['1st', '2nd', '3rd'];
+
+const patterns = [
+  {
+    type: "Aesthetic & Styles",
+    values: [
+      "Minimalist",
+      "Art Deco",
+      "Bauhaus",
+      "Scandinavian",
+      "Mid-Century Modern",
+      "Industrial",
+      "Victorian",
+      "Gothic",
+      "Baroque",
+      "Rococo",
+      "Brutalist",
+      "Shabby Chic",
+      "Bohemian (Boho)",
+      "Rustic",
+      "Contemporary",
+      "Traditional",
+      "Transitional",
+      "Eclectic",
+      "Coastal (Hamptons)",
+      "French Country",
+      "Hollywood Regency",
+      "Japandi",
+      "Craftsman",
+      "Art Nouveau",
+      "Cubism",
+      "Surrealism",
+      "Pop Art",
+      "Futurism",
+      "Deconstructivism",
+      "Postmodern",
+      "Neo-Classical",
+      "Mediterranean",
+      "Colonial",
+      "Prairie Style",
+      "Farmhouse",
+      "Tropical",
+      "Zen",
+      "Hi-Tech",
+      "Memphis",
+      "Steampunk",
+      "Gothic Revival",
+      "Renaissance",
+      "Expressionism",
+      "Minimalist Graphic",
+      "Swiss Style (International Typographic Style)",
+      "Psychedelic",
+      "Grunge",
+      "Retro",
+      "Vintage",
+      "Dadaism",
+      "Op Art",
+      "Art & Craft (Arts and Crafts)",
+      "Geometric",
+      "Flat Design",
+      "Material Design",
+      "Biomimicry",
+      "Streamline Moderne",
+      "Chinoiserie",
+      "Trompe-l'oeil",
+      "Kitsch",
+      "Wabi-Sabi",
+      "Organic Modern",
+      "Cyberpunk",
+      "Victorian Gothic",
+      "Art School",
+      "Abstract",
+      "High-Tech Architecture",
+      "Organic Architecture",
+      "Parametric Design",
+      "Biophilic Design",
+      "De Stijl (Neoplasticism)",
+      "Constructivism",
+      "Cubo-Futurism",
+      "Vorticism",
+      "Suprematism",
+      "Rayonnism",
+      "Purism",
+      "Orphism",
+      "Luminism"
+    ]
+  },
+  {
+    type: "Colors & Color Palettes",
+    values: [
+      "Sky Blue, Sandy Beige, Ocean Teal, White Foam",
+      "Deep Orange, Rusty Red, Golden Yellow, Dark Brown",
+      "Lavender, Blush Pink, Warm Grey, Soft Coral",
+      "Moss Green, Pine Green, Mushroom Grey, Bark Brown",
+      "Cream, Dusty Rose, Sage Green, Muted Lavender",
+      "Bright Turquoise, Mango Orange, Palm Green, Hot Pink",
+      "Icy Blue, Frosty Silver, White, Cool Grey",
+      "Terracotta, Cactus Green, Twilight Purple, Starlight White",
+      "Mustard Yellow, Avocado Green, Burnt Orange, Walnut Brown",
+      "Baby Blue, Soft Peach, Pale Lilac, Mint Green",
+      "Vivid Orange, Deep Red, Purple Haze, Dark Blue",
+      "Royal Purple, Gold, Black, Ivory",
+      "Bamboo Green, Stone Grey, Cherry Blossom Pink, Sky Blue",
+      "Deep Sea Blue, Marine Green, Coral Reef, Sandy Shore",
+      "Sunflower Yellow, Leaf Green, Sky Blue, Earth Brown",
+      "Neon Pink, Electric Blue, Glowing Green, Night Black",
+      "Bubblegum Pink, Lemon Yellow, Mint Green, Baby Blue",
+      "Dusty Red, Orange Sand, Martian Grey, Space Black",
+      "Aurora Green, Ice White, Polar Blue, Glacial Silver",
+      "Bright Red, Shimmering Gold, Royal Blue, Glowing Orange",
+      "Soft Blush, Rich Bordeaux, Warm Cream, Dark Grey",
+      "Earthy Sage, Sepia Brown, Linen White, Deep Forest Green",
+      "Cobalt Blue, Citrus Orange, Lemon Yellow, Crisp White",
+      "Peacock Blue, Green Plume, Gold Accents, Deep Purple",
+      "Lavender Grey, Soft Peach, Rosy Pink, Deep Mauve",
+      "Charcoal Black, Rust Red, Warm Taupe, Whitewash",
+      "Black Velvet, Dark Cherry, Pewter, Smoky Quartz",
+      "Vibrant Neon Green, Electric Blue, Hot Pink, Bright Yellow",
+      "Sky Blue, Earth Brown, Cloud White, Sun Yellow",
+      "Midnight Navy, Silver Frost, Winter White, Pine Green",
+      "Summit White, Slate Rock, Mountain Green, Skyline Blue",
+      "Deep Ocean Blue, Aquatic Teal, Sandy Beige, Coral Pink",
+      "Mirage Grey, Cactus Green, Sandstone, Blue Sky",
+      "Leafy Green, Bark Brown, Sunbeam Yellow, Sky Blue",
+      "Lava Red, Ash Grey, Coal Black, Flame Orange",
+      "Azure Blue, Sun-kissed Orange, Olive Green, White Stone",
+      "Desert Sand, Oasis Blue, Sunset Orange, Palm Green",
+      "Frost White, Steel Blue, Natural Wood, Soft Grey",
+      "Matcha Green, Sakura Pink, Rice Paper, Bamboo Yellow",
+      "Tropical Green, Bright Yellow"
+    ]
+  },
+  {
+    type: "Materials",
+    values: [
+      "Reclaimed Wood",
+      "Velvet",
+      "Cork",
+      "Polished Concrete",
+      "Brass",
+      "Petrified Wood",
+      "Hand-painted Ceramic",
+      "Epoxy Resin",
+      "Linen",
+      "Acid-Washed Metal",
+      "Wool",
+      "Fluted Glass",
+      "Vintage Brass",
+      "Colored Concrete",
+      "Moss",
+      "Silk",
+      "Colored Stainless Steel",
+      "Wire-brushed wood",
+      "Shou Sugi Ban (Charred Wood)",
+      "Woven Metal Mesh",
+      "Rattan",
+      "Copper",
+      "Burnished Metal",
+      "Oxidized Metal",
+      "Crushed Gemstone",
+      "Marmorino Plaster",
+      "Knitted Textiles",
+      "Lava Stone",
+      "Cotton",
+      "Corduroy",
+      "Tweed",
+      "Burl Wood",
+      "Live Edge Wood",
+      "Herringbone Wood",
+      "Shagreen",
+      "Mohair",
+      "Alpaca",
+      "Sheepskin",
+      "Satin Brass"
+    ]
+  },
+  {
+    type: "Patterns",
+    values: [
+      "Stripes",
+      "Polka Dots",
+      "Plaid",
+      "Tartan",
+      "Gingham",
+      "Chevron",
+      "Herringbone",
+      "Houndstooth",
+      "Paisley",
+      "Floral",
+      "Damask",
+      "Toile",
+      "Animal Print",
+      "Leopard Print",
+      "Zebra Print",
+      "Tiger Stripe",
+      "Snake Skin",
+      "Camouflage",
+      "Argyle",
+      "Geometric",
+      "Abstract",
+      "Moroccan",
+      "Ikat",
+      "Tribal",
+      "Batik",
+      "Brocade",
+      "Lace",
+      "Quilted",
+      "Mosaic",
+      "Fishnet",
+      "Checkerboard",
+      "Harlequin",
+      "Pin Stripes",
+      "Windowpane",
+      "Basket Weave",
+      "Greek Key",
+      "Fretwork",
+      "Chinoiserie",
+      "Shibori",
+      "Ogee",
+      "Ticking Stripe",
+      "Honeycomb",
+      "Trellis",
+      "Jacobean",
+      "Art Deco",
+      "Art Nouveau",
+      "Celtic Knot",
+      "Ditsy Print",
+      "Liberty Print",
+      "Wallpaper Florals",
+      "Baroque",
+      "Rococo",
+      "Aztec",
+      "Patchwork",
+      "Seersucker",
+      "Cable Knit",
+      "Matelassé",
+      "Burlap",
+      "Denim",
+      "Velvet",
+      "Chenille",
+      "Sequin",
+      "Glitter",
+      "Marble",
+      "Granite",
+      "Terrazzo",
+      "Speckle",
+      "Splatter",
+      "Inkblot",
+      "Watercolor",
+      "Ombre",
+      "Gradient",
+      "Tie-dye",
+      "Acid Wash",
+      "Crushed Velvet",
+      "Faux Fur",
+      "Broderie Anglaise",
+      "Crochet",
+      "Macramé",
+      "Kantha",
+      "Chintz",
+      "Ottoman Rib",
+      "Pinstripe",
+      "Filigree",
+      "Foliage",
+      "Swirl",
+      "Spiral",
+      "Optical Illusion",
+      "Labyrinth",
+      "Mandala",
+      "Chevron Zigzag",
+      "Ripples",
+      "Waves",
+      "Scales",
+      "Clouds",
+      "Stars",
+      "Moons",
+      "Suns",
+      "Galaxy",
+      "Universe"
+    ]
+  },
+  {
+    type: "Backgrounds",
+    values: [
+      "A serene beach at sunset with soft, pastel colors",
+      "A bustling city skyline at night, lights twinkling",
+      "A tranquil mountain lake reflecting the surrounding peaks",
+      "A lush forest in early morning mist",
+      "A field of lavender under a clear blue sky",
+      "The Milky Way galaxy stretching across a starry sky",
+      "A cozy cabin in a snowy landscape",
+      "Cherry blossoms in full bloom by a tranquil pond",
+      "A desert scene with a dramatic sunset",
+      "A vibrant coral reef under crystal clear water",
+      "An old cobblestone street in Europe, lined with cafes",
+      "Golden autumn leaves covering a forest floor",
+      "A rainbow arching over a waterfall",
+      "A modern minimalist interior with soft lighting",
+      "A classic library room filled with books",
+      "Northern lights dancing over a frozen landscape",
+      "A vintage map of the world",
+      "A sunflower field at sunrise",
+      "A bustling farmer's market with colorful produce",
+      "An abstract geometric pattern with bright colors",
+      "A graffiti-filled urban street art scene",
+      "A majestic castle surrounded by mist",
+      "A traditional Japanese garden with a koi pond",
+      "A futuristic cityscape with towering skyscrapers",
+      "A snowy mountain range under a clear blue sky",
+      "A close-up of dew drops on spider webs",
+      "A tranquil zen garden with raked sand",
+      "A vibrant carnival with fireworks in the sky",
+      "A picturesque vineyard in the rolling hills",
+      "A digital cyberpunk city with neon lights",
+      "A serene path through a bamboo forest",
+      "A macro shot of a butterfly on a flower",
+      "A historic European alleyway at dusk",
+      "A tropical beach with palm trees and turquoise water",
+      "An underwater scene with a swimming turtle",
+      "A panoramic view of the Grand Canyon",
+      "A night sky with a full moon and clouds",
+      "A close-up of colorful autumn leaves",
+      "A peaceful countryside with rolling hills and a farm",
+      "A white sand beach with a single palm tree",
+      "A medieval stone bridge over a calm river",
+      "A colorful hot air balloon festival",
+      "A vibrant mural on an urban brick wall",
+      "A misty forest path in early morning light",
+      "A detailed close-up of a peacock feather",
+      "An icy glacier leading into the sea",
+      "A sunlit old bookshop with books piled high",
+      "A high-speed train passing through the countryside",
+      "A close-up of water droplets on a leaf",
+      "A neon-lit street in Tokyo at night",
+      "A field of bright red poppies under a sunny sky",
+      "A magical fairy tale forest with glowing lights",
+      "A panoramic view of Paris from above, with the Eiffel Tower",
+      "A quiet monastery with mountains in the background",
+      "A rustic barn in a snowy field",
+      "A close-up of a vibrant bird perched on a branch",
+      "A fiery sunset over a calm ocean",
+      "A lively street in Havana with classic cars",
+      "An abandoned amusement park overgrown with nature",
+      "A detailed map of a fantasy world",
+      "An aerial view of a heart-shaped island",
+      "A dark, moody forest with light streaming through trees",
+      "A pattern of colorful Moroccan tiles",
+      "A lively coral reef with a school of fish",
+      "A foggy morning in a New England harbor",
+      "A panoramic view of the Sahara Desert",
+      "A vibrant street in India during Holi festival",
+      "A peaceful chapel in the countryside",
+      "An underwater cave with rays of light",
+      "A dramatic cliff overlooking the ocean",
+      "A close-up of frost patterns on a window",
+      "A bustling night market in Asia",
+      "A tranquil cottage garden with flowers and bees",
+      "A snowy owl in flight against a winter sky",
+      "A rustic wooden pathway through a marsh",
+      "A close-up of a lion's face, eyes intense",
+      "A scenic view of Tuscany's rolling hills and vineyards",
+      "A misty morning on the Scottish Highlands",
+      "A vintage car parked on a Havana street",
+      "A close-up of raindrops on a colorful umbrella",
+      "A picturesque lighthouse on a rocky shore",
+      "A vibrant butterfly garden with various species",
+      "An opulent room in a historic palace",
+      "A wild horse running through a meadow",
+      "A colorful abstract painting with swirling patterns",
+      "A romantic bridge over a canal in Venice",
+      "A close-up of a spider web with morning dew",
+      "A panoramic sunset view from a mountaintop",
+      "A bustling subway station with trains passing",
+      "A charming old village with stone houses"
+    ]
+  },
+  {
+    type: "AI concepts",
+    values: []
+  }
+]
 
 const KeyCodes = {
   comma: 188,
@@ -35,7 +415,8 @@ function Result() {
   const socket = useSocket();
   const { id } = useParams();
   const isDarkMode = useSelector(state => state.app.isDarkMode);
-
+  const inputRefs = useRef([]);
+  const [isFocus, setIsFocus] = useState(0);
   const [isAdvanced, setIsAdvanced] = useState([]);
   const [concept, setConcept] = useState({});
   const [count, setCount] = useState(0);
@@ -45,9 +426,12 @@ function Result() {
   const [tags, setTags] = useState([]);
   const [advancedValue, setAdvancedValue] = useState([]);
   const [basicValue, setBasicValue] = useState([]);
+  const [selectedType, setSelectedType] = useState([]);
+  const [pos, setPos] = useState([]);
   const [progress, setProgress] = useState({});
   const prevConcept = usePrevious(concept);
   const prevProgress = usePrevious(progress);
+  const [blendIdeas, setBlendIdeas] = useState([]);
 
   useEffect(() => {
     getImage();
@@ -94,6 +478,12 @@ function Result() {
         setAdvancedValue((prev) => res.data.concept.resultImages.map((data, index) => prev[index] ? prev[index] : data.prompt));
         setIsAdvanced((prev) => {
           return res.data.concept.resultImages.map((_, index) => prev[index] ? true : false);
+        });
+        setSelectedType((prev) => {
+          return res.data.concept.resultImages.map((_, index) => prev[index] ? prev[index] : 0);
+        });
+        setPos((prev) => {
+          return res.data.concept.resultImages.map((_, index) => prev[index] ? prev[index] : 0);
         });
       }
     }).catch(err => {
@@ -308,7 +698,23 @@ function Result() {
                   setBasicValue(tmp);
                 }
               }}
+                ref={el => inputRefs.current[index] = el}
                 // autoFocus
+                onFocus={(e) => {
+                  setIsFocus(index);
+                }}
+                onClick={(e) => {
+                  const cursorPosition = e.target.selectionStart;
+                  let tmp = [...pos];
+                  tmp[index] = cursorPosition;
+                  setPos(tmp);
+                }}
+                onKeyUp={(e) => {
+                  const cursorPosition = e.target.selectionStart;
+                  let tmp = [...pos];
+                  tmp[index] = cursorPosition;
+                  setPos(tmp);
+                }}
                 disabled={data.status != 'completed' && data.status != 'failed'}
               />
               <div className="mt-1 text-right">
@@ -319,10 +725,99 @@ function Result() {
                       // prev[index] = !prev[index];
                       let tmp = [...prev];
                       tmp[index] = !tmp[index];
+                      let tmp1 = [...pos];
+                      let len = tmp[index] ? advancedValue[index].length : basicValue[index].length;
+                      tmp1[index] = len;
+                      setPos(tmp1);
                       return [...tmp];
                     });
+
                   }}>{isAdvanced[index] ? "Basic Mode" : "Advanced"}</Button>
               </div>
+              {isFocus == index && <div className="my-2">
+                <Row gutter={[12, 12]}>
+                  {patterns.map((pat, ind) => <Col xs={12} sm={8} lg={4} key={`patterns_${ind}`}>
+                    {/* <div className={classNames("p-3 border-2 border-solid border-gray-300 bg-gray-200 cursor-pointer", selectedType[index] == ind && "bg-purple-500 text-white")} onClick={() => {
+                      let tmp = [...selectedType];
+                      tmp[index] = ind;
+                      setSelectedType(tmp);
+                    }}>{pat.type}</div> */}
+                    <Button className={classNames("p-2 md:p-3 rounded-none h-10 sm:h-12 md:h-14 border-2 border-solid border-gray-300 bg-gray-200 hover:!border-gray-300 hover:!text-white hover:!bg-purple-500 cursor-pointer text-gray-800", selectedType[index] == ind && "bg-purple-500 hover:!bg-purple-500 !text-white")} block onClick={() => {
+                      if (pat.type == 'AI concepts' && !blendIdeas[index]) {
+                        getBlendingIdeas(id, { imageId: data.imageId }).then(res => {
+                          let tmp = [...blendIdeas];
+                          tmp[index] = res.data.ideas;
+                          setBlendIdeas(tmp);
+                        }).catch(err => console.log(err)).finally(() => { });
+                      }
+                      let tmp = [...selectedType];
+                      tmp[index] = ind;
+                      setSelectedType(tmp);
+                    }}>{pat.type}</Button>
+                  </Col>)}
+                  <Col span={24}>
+                    <div className={classNames("max-h-80 overflow-auto p-3", isDarkMode ? "bg-gray-700" : "bg-gray-100")}>
+                      <Row gutter={[12, 12]} className="items-stretch">
+                        {patterns[selectedType[index]]?.values.length > 0 && patterns[selectedType[index]]?.values.map((value, ind) => <Col xs={12} sm={8} md={6} lg={4} key={`values_${ind}`}>
+                          <div
+                            className={classNames("p-2 border-2 border-solid cursor-pointer h-full flex items-center justify-center hover:bg-blue-700 ", isDarkMode ? "border-gray-500 bg-gray-300 hover:text-white" : "border-gray-300 bg-gray-200 hover:text-white")}
+                            onClick={() => {
+                              let txt = (isAdvanced[index] ? advancedValue[index] : basicValue[index]) || "";
+                              let prev = txt.slice(0, pos[index]);
+                              let next = txt.slice(pos[index]);
+                              const newText = prev + ((prev.slice(-1) == ' ' || !prev.slice(-1)) ? '' : ' ') + `${value}` + ((next.slice(0, 1) == ' ' || !next.slice(0, 1)) ? '' : ' ') + next;
+                              if (isAdvanced[index]) {
+                                let tmp = [...advancedValue];
+                                tmp[index] = newText;
+                                setAdvancedValue(tmp);
+                              } else {
+                                let tmp = [...basicValue];
+                                tmp[index] = newText;
+                                setBasicValue(tmp);
+                              }
+                              let tmp = [...pos];
+                              tmp[index] = pos[index] + value.length + ((prev.slice(-1) == ' ' || !prev.slice(-1)) ? 0 : 1) + ((next.slice(0, 1) == ' ' || !next.slice(0, 1)) ? 0 : 1);
+                              setPos(tmp);
+                              inputRefs.current[index].focus();
+                              // inputRefs.current[index].setSelectionRange(pos[index] + value.length, pos[index] + value.length);
+                            }}
+                          >{value}</div>
+                        </Col>)}
+                        {(patterns[selectedType[index]]?.values.length == 0 && !blendIdeas[index]) && <Col span={24}>
+                          <Spin className={isDarkMode && "text-white [&_.ant-spin-dot-item]:bg-white"} tip="Generating with AI...">
+                            <div className="h-28"></div>
+                          </Spin>
+                        </Col>}
+                        {patterns[selectedType[index]]?.values.length == 0 && blendIdeas[index]?.map((value, ind) => <Col xs={24} md={12} key={`values_${ind}`}>
+                          <div
+                            className={classNames("p-2 border-2 border-solid cursor-pointer h-full flex items-center justify-center hover:bg-blue-700 ", isDarkMode ? "border-gray-500 bg-gray-300 hover:text-white" : "border-gray-300 bg-gray-200 hover:text-white")}
+                            onClick={() => {
+                              let txt = (isAdvanced[index] ? advancedValue[index] : basicValue[index]) || "";
+                              let prev = txt.slice(0, pos[index]);
+                              let next = txt.slice(pos[index]);
+                              const newText = prev + ((prev.slice(-1) == ' ' || !prev.slice(-1)) ? '' : ' ') + `${value}` + ((next.slice(0, 1) == ' ' || !next.slice(0, 1)) ? '' : ' ') + next;
+                              if (isAdvanced[index]) {
+                                let tmp = [...advancedValue];
+                                tmp[index] = newText;
+                                setAdvancedValue(tmp);
+                              } else {
+                                let tmp = [...basicValue];
+                                tmp[index] = newText;
+                                setBasicValue(tmp);
+                              }
+                              let tmp = [...pos];
+                              tmp[index] = pos[index] + value.length + ((prev.slice(-1) == ' ' || !prev.slice(-1)) ? 0 : 1) + ((next.slice(0, 1) == ' ' || !next.slice(0, 1)) ? 0 : 1);
+                              setPos(tmp);
+                              inputRefs.current[index].focus();
+                              // inputRefs.current[index].setSelectionRange(pos[index] + value.length, pos[index] + value.length);
+                            }}
+                          >{value}</div>
+                        </Col>)}
+                      </Row>
+                    </div>
+                  </Col>
+                </Row>
+              </div>}
               <div className="text-center mb-4">
                 <Button disabled={(data.status != 'completed' && data.status != 'failed') || loading == index} type="primary" size="" onClick={() => handleGenerate(data.imageId, index)} loading={loading == index}>Generate</Button>
               </div>

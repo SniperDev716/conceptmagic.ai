@@ -11,6 +11,7 @@ import classNames from "classnames";
 import { ConfigProvider, theme } from "antd";
 import { HappyProvider } from '@ant-design/happy-work-theme';
 
+// import "animate.css";
 import "./App.css";
 import PublicRoute from "./container/routes/PublicRoute";
 import PrivateRoute from "./container/routes/PrivateRoute";

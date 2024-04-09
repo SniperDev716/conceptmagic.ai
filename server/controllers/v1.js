@@ -1,5 +1,5 @@
 const delFile = require('../utils/delFile');
-const { getDescription, getPromptByKeywords, getIdeas } = require("../utils/chatGPT");
+const { getDescription, getPromptByKeywords, getIdeas, getBlendIdeas } = require("../utils/chatGPT");
 const ConceptModel = require('../models/concepts');
 const { _generateImage, _getImages } = require('../utils/imagineAPI');
 const { pinterestSearch } = require('../scripts/pinSearch');
@@ -101,6 +101,8 @@ exports.getImageDescriptions = async (req, res) => {
         concept.resultImages[index + 1] = { imageId: `tmp-${index}`, prompt: newPrompt, addition: idea, status: "processing" };
         await concept.save();
       }
+
+
 
       // _generateImage(prompt).then(async data => {
 
@@ -379,6 +381,28 @@ exports.getImagesfromPin = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message,
+    })
+  }
+}
+
+exports.getBlendingIdeas = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const imageId = req.body.imageId;
+    const concept = await ConceptModel.findById(id);
+    let img = concept.resultImages.filter(img => img.imageId == imageId);
+    let prevPrompt = img[0].prompt;
+
+    let ideas = await getBlendIdeas(prevPrompt);
+    return res.json({
+      success: true,
+      ideas,
+    });
+  } catch (error) {
+    console.log("[ERROR]:getBlendingIdeas", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong!",
     })
   }
 }

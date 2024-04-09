@@ -105,3 +105,37 @@ exports.getIdeas = async (prompt, i = 0) => {
     }
   }
 }
+
+exports.getBlendIdeas = async (prompt, i = 0) => {
+  try {
+    console.log("[LOG]", "Blend Idea generation started!");
+    const props = {
+      model: 'gpt-4-0125-preview',
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: "system",
+          content: `You are a helpful and creative focused GPT-4 assistant designed to come up with clever and creative ideas to change an existing image into a new concept. The goal is to showcase different creative ideas and unique concepts for image prompts that will be used in a text-to-image generator. Provide your answer in JSON structure like this {'ideas': ['', '', ...]}`
+        },
+        {
+          role: "user",
+          content: `Come up with 50 Concept Blending variations on this description:\n
+          ${prompt}`,
+        }
+      ]
+    }
+    const completion = await openai.createChatCompletion(props);
+    console.log("[LOG]", "Blend Idea generation finished!"/* , completion.data.choices[0].message.content */);
+    const data = JSON.parse(completion.data.choices[0].message.content);
+    return data.ideas;
+    // return [];
+  } catch (error) {
+    console.log("[ERROR]:getBlendIdeas", error.message);
+    await sleep(1);
+    if (i < 2) {
+      return this.getBlendIdeas(prompt, i + 1);
+    } else {
+      return [];
+    }
+  }
+}
